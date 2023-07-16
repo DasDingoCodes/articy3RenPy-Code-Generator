@@ -55,11 +55,17 @@ CHARACTER_ENTITY_TYPES = [x.strip() for x in CHARACTER_ENTITY_TYPES]
 # For example: { feature_x : property_x }
 # means that feature_x contains property_x and the value of property_x is the name of a variable set 
 FEATURE_VARIABLE_SET_MAP = {
-    'FeatureVariableSet' : 'VariablesSetName'
+    config['Articy']['FeatureVariableSet'] : config['Articy']['VariablesSetName']
 }
 # name of the variable in a variable set that stores the name that 
 # shall be displayed by RenPy when the associated charater speaks
 VARIABLE_SET_CHARACTER_NAME = config['Articy']['VariableSetCharacterName']
+# Name of the template that indicates a block with RenPy-code.
+RENPY_BOX = config['Articy']['RenPyBox']
+# Name of the template that is generated with a manually given label.
+RENPY_ENTRYPOINT = config['Articy']['RenPyEntryPoint']
+# Name of the template that is generated with a manually given label.
+RENPY_MENU_CHOICE = config['Articy']['RenPyMenuChoice']
 
 
 class Converter:
@@ -203,15 +209,15 @@ class Converter:
             lines = self.lines_of_jump_node(model)
         elif model_type == 'Hub':
             lines = self.lines_of_hub_node(model, rel_path_to_file)
-        elif model_type == 'RenPyBox':
+        elif model_type == RENPY_BOX:
             lines = self.lines_of_renpy_box(model, rel_path_to_file)
         elif model_type == 'Condition':
             lines = self.lines_of_condition_node(model)
         elif model_type == 'Instruction':
             lines = self.lines_of_instruction_node(model, rel_path_to_file)
-        elif model_type == 'RenPyEntryPoint':
+        elif model_type == RENPY_ENTRYPOINT:
             lines = self.lines_of_renpy_entry_point(model, rel_path_to_file)
-        elif model_type == 'RenPyBoxMenuChoice':
+        elif model_type == RENPY_MENU_CHOICE:
             lines = self.lines_of_renpy_box_menu_choice(model, rel_path_to_file)
         elif model_type in ignore_model_types:
             # do nothing for these 
@@ -235,11 +241,11 @@ class Converter:
         return lines
 
     def lines_of_renpy_box_menu_choice(self, model: dict, path_file: Path) -> list:
-        '''Lines of RenPyBoxMenuChoice. May contain both RenPy code and dialogue/exposition'''
+        '''Lines of RenPyMenuChoice. May contain both RenPy code and dialogue/exposition'''
         text = model['Properties']['Text']
         stage_directions = model['Properties']['StageDirections']
         lines = self.lines_of_label(model)
-        lines.extend(f'{INDENT}# RenPyBoxMenuChoice\n')
+        lines.extend(f'{INDENT}# {RENPY_MENU_CHOICE}\n')
         if text:
             lines.extend(self.lines_of_renpy_logic(text, model, path_file))
         
@@ -335,7 +341,7 @@ class Converter:
         ]
 
     def lines_of_jump_logic(self, model: dict, path_file: Path) -> list:
-        '''Returns the RenPy code lines for the jump logic for models of type FlowFragment, DialogueFragment, Hub, Instruction or RenPyBox.'''
+        '''Returns the RenPy code lines for the jump logic for models that are not Condition or Jump nodes'''
         output_pins = get_output_pins_of_model(model)
         pins = output_pins
         # FlowFragments should use the input_pins for the next jump target because content in the FlowFragment is the next place that should be jumped to
