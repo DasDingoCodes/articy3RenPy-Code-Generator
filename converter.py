@@ -16,9 +16,9 @@ INDENT = '    '
 ############################
 
 # This file is the JSON export of the Articy project
-PATH_ARTICY_EXPORT_FILE = config['Paths']['ArticyExportFile']
+PATH_ARTICY_EXPORT_FILE = Path(config['Paths']['ArticyExportFile'])
 # The generated code will go in this directory
-PATH_RENPY_ARTICY_DIR = config['Paths']['RenPyArticyDir']
+PATH_RENPY_ARTICY_DIR = Path(config['Paths']['RenPyArticyDir'])
 # This is the prefix for all files under RenPyArticyDir
 FILE_PREFIX = config['Paths']['GeneratedFilePrefix']
 # Log file
@@ -86,6 +86,9 @@ class Converter:
             if path_parent_dir.name == "game":
                 self.path_renpy_game_dir =  path_parent_dir
                 break
+        if self.path_renpy_game_dir is None:
+            msg = f"Did not find a \"game\" folder in path \"{self.path_base_dir}\""
+            raise UnexpectedContentException(msg)
 
         # object that shall contain all the JSON data
         self.data = {}
@@ -643,10 +646,12 @@ class Converter:
         for path_item in self.path_base_dir.iterdir():
 
             if path_item.is_dir() and path_item.name not in expected_dir_names:
-                raise UnexpectedContentException(f"Did not expect directory \"{path_item.name}\" in directory {self.path_base_dir}")
+                msg = f"Did not expect directory \"{path_item.name}\" in directory {self.path_base_dir}"
+                raise UnexpectedContentException(msg)
 
             if not path_item.is_dir() and FILE_PREFIX != path_item.name[:len(FILE_PREFIX)]:
-                raise UnexpectedContentException(f"Did not expect file \"{path_item.name}\" in directory {self.path_base_dir}")
+                msg = f"Did not expect file \"{path_item.name}\" in directory {self.path_base_dir}"
+                raise UnexpectedContentException(msg)
 
         # remove path_base_dir and its contents
         shutil.rmtree(self.path_base_dir)
@@ -657,3 +662,4 @@ if __name__ == '__main__':
         PATH_ARTICY_EXPORT_FILE,
         PATH_RENPY_ARTICY_DIR
     )
+    converter.run()
