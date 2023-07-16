@@ -3,6 +3,7 @@ from pathlib import Path
 from utils import *
 from configparser import ConfigParser
 import shutil
+import os
 
 
 path_config = Path(__file__).parent / 'config.ini'
@@ -634,7 +635,8 @@ class Converter:
 
     def clean_up(self) -> None:
         '''Cleans up folder before code gets generated.
-        Currently that means removing path_base_dir and its content so that new content can be generated'''
+        That means removing the contents of path_base_dir so that new content can be generated.
+        Does not start removal if unexpected content is encountered.'''
         
         # if directory does not exist there is nothing to remove
         if not self.path_base_dir.exists():
@@ -659,8 +661,18 @@ class Converter:
                 msg = f"Did not expect file \"{path_item.name}\" in directory {self.path_base_dir}"
                 raise UnexpectedContentException(msg)
 
-        # remove path_base_dir and its contents
-        shutil.rmtree(self.path_base_dir)
+        # remove path_base_dir contents
+        for filename in os.listdir(self.path_base_dir):
+            file_path = os.path.join(self.path_base_dir, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                msg = f'Failed to delete {file_path}. Reason: {e}'
+                self.log_data[self.path_base_dir] = [msg]
+                print(msg)
 
 
 if __name__ == '__main__':
