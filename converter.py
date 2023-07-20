@@ -586,9 +586,10 @@ class Converter:
         character_name = get_free_character_name(character_name, self.entity_id_to_character_name_map)
         self.entity_id_to_character_name_map[model['Properties']['Id']] = character_name
         self.add_new_definition(character_name)
-        lines.append(
+        lines.extend([
+            f"# Entity: {model['Properties']['DisplayName']}\n",
             f'define {character_name} = Character(\n'
-        )
+        ])
         params = {}
         if 'Template' in model.keys():
             for feature_name in model['Template']:
