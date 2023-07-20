@@ -49,18 +49,9 @@ CHARACTER_PREFIX = config['Renpy']['CharacterPrefix']
 ### Articy stuff ###
 ####################
 
-# Technical names of the entity templates that contain characters
-CHARACTER_ENTITY_TYPES = config['Articy']['CharacterEntityTypes'].split(",")
-CHARACTER_ENTITY_TYPES = [x.strip() for x in CHARACTER_ENTITY_TYPES]
-# Maps features to their properties that contain names of variable sets.
-# For example: { feature_x : property_x }
-# means that feature_x contains property_x and the value of property_x is the name of a variable set 
-FEATURE_VARIABLE_SET_MAP = {
-    config['Articy']['FeatureVariableSet'] : config['Articy']['VariablesSetName']
-}
-# name of the variable in a variable set that stores the name that 
-# shall be displayed by RenPy when the associated charater speaks
-VARIABLE_SET_CHARACTER_NAME = config['Articy']['VariableSetCharacterName']
+# Technical names of features that contain parameters for RenPy Character objects (comma separated values)
+FEATURES_RENPY_CHARACTER_PARAMS = config['Articy']['FeaturesRenPyCharacterParams'].split(",") 
+FEATURES_RENPY_CHARACTER_PARAMS = [x.strip() for x in FEATURES_RENPY_CHARACTER_PARAMS if x.strip()]
 # Name of the template that indicates a block with RenPy-code.
 RENPY_BOX = config['Articy']['RenPyBox']
 # Name of the template that is generated with a manually given label.
@@ -120,6 +111,9 @@ class Converter:
         # map will be filled later on when characters are created
         self.entity_id_to_character_name_map = {}
 
+        # set of all technical names for entity templates 
+        self.entity_types = {}
+
         # set of all definitions in RenPy files. An error should be raised if something is defined twice
         self.renpy_definitions = set()
 
@@ -168,6 +162,13 @@ class Converter:
         self.hierarchy_path_map = {}
 
         self.global_variables = self.data['GlobalVariables']
+
+        self.entity_types = set()
+        for obj in self.data['ObjectDefinitions']:
+            # skip non-entities
+            if obj['Class'] != 'Entity':
+                continue
+            self.entity_types.add(obj['Type'])
 
         self.entity_id_to_character_name_map = {}
         self.renpy_definitions = set()
@@ -564,47 +565,45 @@ class Converter:
         path_file = self.path_base_dir / CHARACTERS_FILE_NAME
         lines = []
         for model in self.models:
-            if "Template" not in model.keys():
-                continue
-            template_name = get_template_display_name_by_type(model["Type"], self.data["ObjectDefinitions"])
-            if template_name not in CHARACTER_ENTITY_TYPES:
+            if model['Type'] not in self.entity_types:
                 continue
 
             lines.extend(self.lines_of_character_definition(model))
             lines.append('\n')
         with open(path_file, 'w') as f:
             f.writelines(lines)
-
+    
     def lines_of_character_definition(self, model: dict) -> list:
         '''Returns RenPy code lines for the definition of the given character'''
         lines = []
-        # First find out what name shall be displayed in the game
-        name_variable = ''
-        name_variable_dynamic = False
-        # find out if variable set is associated with character
-        for feature_name in model['Template']:
-            # skip if feature does not contain a variable set property
-            if feature_name not in FEATURE_VARIABLE_SET_MAP.keys():
-                continue
-            variable_set_name_property = FEATURE_VARIABLE_SET_MAP[feature_name]
-            variable_set_name = model['Template'][feature_name][variable_set_name_property]
-            # skip if no variable set is associated with the character 
-            if variable_set_name == '':
-                continue
-            name_variable = f'{variable_set_name}.{VARIABLE_SET_CHARACTER_NAME}'
-            name_variable_dynamic = True
-        # if name is still empty, take the display name of the entity
-        if name_variable == '':
-            name_variable = model['Properties']['DisplayName']
-        name_variable = add_escape_characters(name_variable)
         # find out what name RenPy shall use internally for the character
-        character_name = CHARACTER_PREFIX + str(model['Properties']['DisplayName']).split(' ')[0].lower()
+        character_name = str(model['Properties']['DisplayName']).split(' ')[0].lower().strip()
+        if character_name == "":
+            character_name = "unnamed"
+            path_file = self.path_base_dir / CHARACTERS_FILE_NAME
+            self.log(path_file, f"Unnamed character with ID {model['Properties']['Id']}")
+        character_name = CHARACTER_PREFIX + character_name
         character_name = get_free_character_name(character_name, self.entity_id_to_character_name_map)
         self.entity_id_to_character_name_map[model['Properties']['Id']] = character_name
         self.add_new_definition(character_name)
         lines.append(
-            f'define {character_name} = Character("{name_variable}", dynamic={str(name_variable_dynamic)})\n'
+            f'define {character_name} = Character(\n'
         )
+        params = {}
+        if 'Template' in model.keys():
+            for feature_name in model['Template']:
+                if feature_name not in FEATURES_RENPY_CHARACTER_PARAMS:
+                    continue
+                for parameter in model['Template'][feature_name]:
+                    # if the field is not empty
+                    if model['Template'][feature_name][parameter] != "":
+                        params[parameter] = model['Template'][feature_name][parameter]
+        # if no name was manually given, use the DisplayName of the model 
+        if "name" not in params:
+            params["name"] = f"\"{model['Properties']['DisplayName']}\""
+        for parameter in params:
+            lines.append(f"{INDENT}{parameter}={params[parameter]},\n")
+        lines.append(")\n")
         return lines
     
     def log(self, path: Path, msg: str) -> None:
