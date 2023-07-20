@@ -31,6 +31,7 @@ class Converter:
         renpy_box: str = "RenPyBox",
         renpy_entrypoint: str = "RenPyEntryPoint",
         renpy_menu_choice: str = "RenPyMenuChoice",
+        **kwargs
     ):
         """
         Parameters
@@ -692,6 +693,8 @@ if __name__ == '__main__':
 
     config = ConfigParser()
     config.read(path_config)
+
+    parameters = dict()
     
     ############################
     ### Paths and file names ###
@@ -701,16 +704,22 @@ if __name__ == '__main__':
     path_articy_export_file = Path(config['Paths']['ArticyExportFile'])
     # The generated code will go in this directory
     path_renpy_articy_dir = Path(config['Paths']['RenPyArticyDir'])
+
     # This is the prefix for all files under RenPyArticyDir
-    file_prefix = config['Paths']['GeneratedFilePrefix']
+    if config.has_option("Paths", "file_prefix"):
+        parameters["file_prefix"] = config['Paths']['GeneratedFilePrefix']
     # Log file
-    log_file_name = config['Paths']['LogFileName']
+    if config.has_option("Paths", "log_file_name"):
+        parameters["log_file_name"] = config['Paths']['LogFileName']
     # Generated code base file
-    base_file_name = config['Paths']['BaseFileName']
+    if config.has_option("Paths", "base_file_name"):
+        parameters["base_file_name"] = config['Paths']['BaseFileName']
     # Variables file 
-    variables_file_name = config['Paths']['VariablesFileName']
+    if config.has_option("Paths", "variables_file_name"):
+        parameters["variables_file_name"] = config['Paths']['VariablesFileName']
     # Characters file
-    characters_file_name = config['Paths']['CharactersFileName']
+    if config.has_option("Paths", "characters_file_name"):
+        parameters["characters_file_name"] = config['Paths']['CharactersFileName']
 
 
     ###########################
@@ -718,12 +727,15 @@ if __name__ == '__main__':
     ###########################
 
     # Prefix for the labels that can be jumped to
-    label_prefix = config['Renpy']['LabelPrefix']
+    if config.has_option("Renpy", "label_prefix"):
+        parameters["label_prefix"] = config['Renpy']['LabelPrefix']
     # Label of the RenPy block that ends the game
     # All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game
-    end_label = config['Renpy']['EndLabel']
+    if config.has_option("Renpy", "end_label"):
+        parameters["end_label"] = config['Renpy']['EndLabel']
     # Prefix for the character entities in RenPy
-    character_prefix = config['Renpy']['CharacterPrefix']
+    if config.has_option("Renpy", "character_prefix"):
+        parameters["character_prefix"] = config['Renpy']['CharacterPrefix']
 
 
     ####################
@@ -731,29 +743,18 @@ if __name__ == '__main__':
     ####################
 
     # Technical names of features that contain parameters for RenPy Character objects (comma separated values)
-    features_renpy_character_params = config['Articy']['FeaturesRenPyCharacterParams'].split(",")
-    features_renpy_character_params = [x.strip() for x in features_renpy_character_params if x.strip()]
+    if config.has_option("Articy", "features_renpy_character_params"):
+        features_renpy_character_params = config['Articy']['FeaturesRenPyCharacterParams'].split(",")
+        parameters["features_renpy_character_params"] = [x.strip() for x in features_renpy_character_params if x.strip()]
     # Name of the template that indicates a block with RenPy-code.
-    renpy_box = config['Articy']['RenPyBox']
+    if config.has_option("Articy", "renpy_box"):
+        parameters["renpy_box"] = config['Articy']['RenPyBox']
     # Name of the template that is generated with a manually given label.
-    renpy_entrypoint = config['Articy']['RenPyEntryPoint']
+    if config.has_option("Articy", "renpy_entrypoint"):
+        parameters["renpy_entrypoint"] = config['Articy']['RenPyEntryPoint']
     # Name of the template that is generated with a manually given label.
-    renpy_menu_choice = config['Articy']['RenPyMenuChoice']
+    if config.has_option("Articy", "renpy_menu_choice"):
+        parameters["renpy_menu_choice"] = config['Articy']['RenPyMenuChoice']
 
-    converter = Converter(
-        path_articy_export_file,
-        path_renpy_articy_dir,
-        file_prefix=file_prefix,
-        log_file_name=log_file_name,
-        base_file_name=base_file_name,
-        variables_file_name=variables_file_name,
-        characters_file_name=characters_file_name,
-        label_prefix=label_prefix,
-        end_label=end_label,
-        character_prefix=character_prefix,
-        features_renpy_character_params=features_renpy_character_params,
-        renpy_box=renpy_box,
-        renpy_entrypoint=renpy_entrypoint,
-        renpy_menu_choice=renpy_menu_choice
-    )
+    converter = Converter(path_articy_export_file, path_renpy_articy_dir, **parameters)
     converter.run()
