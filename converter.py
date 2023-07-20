@@ -4,60 +4,10 @@ from utils import *
 from configparser import ConfigParser
 import shutil
 import os
+import sys
 
-
-path_config = Path(__file__).parent / 'config.ini'
-config = ConfigParser()
-config.read(path_config)
 
 INDENT = '    '
-
-############################
-### Paths and file names ###
-############################
-
-# This file is the JSON export of the Articy project
-PATH_ARTICY_EXPORT_FILE = Path(config['Paths']['ArticyExportFile'])
-# The generated code will go in this directory
-PATH_RENPY_ARTICY_DIR = Path(config['Paths']['RenPyArticyDir'])
-# This is the prefix for all files under RenPyArticyDir
-FILE_PREFIX = config['Paths']['GeneratedFilePrefix']
-# Log file
-LOG_FILE_NAME = config['Paths']['LogFileName']
-# Generated code base file
-BASE_FILE_NAME = config['Paths']['BaseFileName']
-# Variables file 
-VARIABLES_FILE_NAME = config['Paths']['VariablesFileName']
-# Characters file
-CHARACTERS_FILE_NAME = config['Paths']['CharactersFileName']
-
-
-###########################
-### RenPy code settings ###
-###########################
-
-# Prefix for the labels that can be jumped to
-LABEL_PREFIX = config['Renpy']['LabelPrefix']
-# Label of the RenPy block that ends the game
-# All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game
-END_LABEL = LABEL_PREFIX + config['Renpy']['EndLabel']
-# Prefix for the character entities in RenPy
-CHARACTER_PREFIX = config['Renpy']['CharacterPrefix']
-
-
-####################
-### Articy stuff ###
-####################
-
-# Technical names of features that contain parameters for RenPy Character objects (comma separated values)
-FEATURES_RENPY_CHARACTER_PARAMS = config['Articy']['FeaturesRenPyCharacterParams'].split(",") 
-FEATURES_RENPY_CHARACTER_PARAMS = [x.strip() for x in FEATURES_RENPY_CHARACTER_PARAMS if x.strip()]
-# Name of the template that indicates a block with RenPy-code.
-RENPY_BOX = config['Articy']['RenPyBox']
-# Name of the template that is generated with a manually given label.
-RENPY_ENTRYPOINT = config['Articy']['RenPyEntryPoint']
-# Name of the template that is generated with a manually given label.
-RENPY_MENU_CHOICE = config['Articy']['RenPyMenuChoice']
 
 
 class Converter:
@@ -65,7 +15,23 @@ class Converter:
     A class converting Articy's JSON export file to RenPy code.
     """
 
-    def __init__(self, path_json: Path, path_target_dir: Path):
+    def __init__(
+        self, 
+        path_json: Path, 
+        path_target_dir: Path,
+        file_prefix: str = "articy_",
+        log_file_name: str = "log.txt",
+        base_file_name: str = "start.rpy",
+        variables_file_name: str = "variables.rpy",
+        characters_file_name: str = "characters.rpy",
+        label_prefix: str = "label_",
+        end_label: str = "end",
+        character_prefix: str = "character_",
+        features_renpy_character_params: list = ["RenPyCharacterParams"],
+        renpy_box: str = "RenPyBox",
+        renpy_entrypoint: str = "RenPyEntryPoint",
+        renpy_menu_choice: str = "RenPyMenuChoice",
+    ):
         """
         Parameters
         ----------
@@ -74,10 +40,52 @@ class Converter:
         path_target_dir : pathlib.Path
             Path towards dir that shall contain the generated code. 
             Must be inside the "game" dir of the RenPy game.
+        file_prefix : str (default: "articy_") 
+            Prefix that will be added in front of each generated file.
+        log_file_name : str (default: "log.txt")
+            Name of the log file. The file_prefix will be prepended.
+        base_file_name : str (default: "start.rpy")
+            Name of the file that contains start label. The file_prefix will be prepended.
+        variables_file_name : str (default: "variables.rpy")
+            Name of the file that contains the generated named stores. The file_prefix will be prepended.
+        label_prefix : str (default: "label_")
+            Prefix that will be added to all auto-generated labels. Needs to start with a character.
+        end_label : str (default: "end")
+            Label of the RenPy block that blocks will jump to if they don't have a jump target in Articy. 
+            The block only returns, thus ending the game.
+            The label_prefix will be prepended.
+        character_prefix : str (default: "character_")
+            Prefix that will be added to the generated character objects.
+        features_renpy_character_params : list (default ["RenPyCharacterParams"])
+            Manually created features that contain parameters for RenPy characters. 
+            The property of such a feature should be a parameter name of the RenPy Character class. 
+            For example, the feature "RenPyCharacterParams" contains the property "name" and its value is "'Alice'".
+            Then the Character object will be generated with "Character([...]name='Alice',[...])". 
+            If an entity does not contain a name value or property, then the name parameter will be automatically set to the entity's display name. 
+        renpy_box : str (default: "RenPyBox") 
+            Name of the template that indicates a block with RenPy-code. 
+            RenPy-code as in non-narration or non-dialogue, that is.
+        renpy_entrypoint : str (default: "RenPyEntryPoint")
+            Name of the template that is used to generated blocks with manually set labels.
+        renpy_menu_choice : str (default: "RenPyMenuChoice")
+            Name of the template for a menu choice item that generates RenPy-code immediately after a menu choice before narration or dialogue.
+            RenPy-code as in non-narration or non-dialogue, that is.
         """
 
         self.path_json = path_json
         self.path_base_dir = path_target_dir
+        self.file_prefix = file_prefix
+        self.log_file_name = file_prefix + log_file_name
+        self.base_file_name = file_prefix + base_file_name
+        self.variables_file_name = file_prefix + variables_file_name
+        self.characters_file_name = file_prefix + characters_file_name
+        self.label_prefix = label_prefix
+        self.end_label = label_prefix + end_label
+        self.character_prefix = character_prefix
+        self.features_renpy_character_params = features_renpy_character_params
+        self.renpy_box = renpy_box
+        self.renpy_entrypoint = renpy_entrypoint
+        self.renpy_menu_choice = renpy_menu_choice
 
         self.path_renpy_game_dir = None
         for path_parent_dir in self.path_base_dir.absolute().parents:
@@ -211,15 +219,15 @@ class Converter:
             lines = self.lines_of_jump_node(model)
         elif model_type == 'Hub':
             lines = self.lines_of_hub_node(model, rel_path_to_file)
-        elif model_type == RENPY_BOX:
+        elif model_type == self.renpy_box:
             lines = self.lines_of_renpy_box(model, rel_path_to_file)
         elif model_type == 'Condition':
             lines = self.lines_of_condition_node(model)
         elif model_type == 'Instruction':
             lines = self.lines_of_instruction_node(model, rel_path_to_file)
-        elif model_type == RENPY_ENTRYPOINT:
+        elif model_type == self.renpy_entrypoint:
             lines = self.lines_of_renpy_entry_point(model, rel_path_to_file)
-        elif model_type == RENPY_MENU_CHOICE:
+        elif model_type == self.renpy_menu_choice:
             lines = self.lines_of_renpy_box_menu_choice(model, rel_path_to_file)
         elif model_type in ignore_model_types:
             # do nothing for these 
@@ -247,7 +255,7 @@ class Converter:
         text = model['Properties']['Text']
         stage_directions = model['Properties']['StageDirections']
         lines = self.lines_of_label(model)
-        lines.extend(f'{INDENT}# {RENPY_MENU_CHOICE}\n')
+        lines.extend(f'{INDENT}# {self.renpy_menu_choice}\n')
         if text:
             lines.extend(self.lines_of_renpy_logic(text, model, path_file))
         
@@ -280,7 +288,7 @@ class Converter:
         model_target = model['Properties']['Target']
         lines = self.lines_of_label(model)
         lines.extend(self.comment_lines(model))
-        lines.append(f'{INDENT}jump {LABEL_PREFIX}{model_target}\n')
+        lines.append(f'{INDENT}jump {self.label_prefix}{model_target}\n')
         lines.append('\n')
         return lines
 
@@ -307,11 +315,11 @@ class Converter:
         condition = convert_condition_from_articy_to_python(condition_text)
         lines.append(f'{INDENT}if {condition}:\n')
         target_id = model['Properties']['OutputPins'][0]['Connections'][0]['Target']
-        target_label = f'{LABEL_PREFIX}{target_id}'
+        target_label = f'{self.label_prefix}{target_id}'
         lines.append(f'{INDENT*2}jump {target_label}\n')
         lines.append(f'{INDENT}else:\n')
         target_id = model['Properties']['OutputPins'][1]['Connections'][0]['Target']
-        target_label = f'{LABEL_PREFIX}{target_id}'
+        target_label = f'{self.label_prefix}{target_id}'
         lines.append(f'{INDENT*2}jump {target_label}\n')
         lines.append('\n')
         return lines
@@ -337,9 +345,9 @@ class Converter:
     def lines_of_label(self, model: dict) -> list:
         '''Returns lines of the RenPy label logic'''
         model_id = model['Properties']['Id']
-        self.add_new_definition(f'{LABEL_PREFIX}{model_id}')
+        self.add_new_definition(f'{self.label_prefix}{model_id}')
         return [
-            f'label {LABEL_PREFIX}{model_id}:\n'
+            f'label {self.label_prefix}{model_id}:\n'
         ]
 
     def lines_of_jump_logic(self, model: dict, path_file: Path) -> list:
@@ -360,8 +368,8 @@ class Converter:
             self.log(path_file, f"No pins for model with ID {model_id}")
             return []
         elif 'Connections' not in pins[0] or len(pins[0]['Connections']) == 0:
-            self.log(path_file, f"label_{model_id} was not assigned any jump target in Articy, will jump to {END_LABEL}")
-            return [f'{INDENT}jump {END_LABEL}\n']
+            self.log(path_file, f"label_{model_id} was not assigned any jump target in Articy, will jump to {self.end_label}")
+            return [f'{INDENT}jump {self.end_label}\n']
         elif len(pins[0]['Connections']) == 1:
             return self.lines_of_single_jump(pins[0], model_id, path_file)
         else:
@@ -373,12 +381,12 @@ class Converter:
         
         # Add instructions if output_pin contains any instructions in the text field
         lines.extend(self.lines_of_expression(output_pin['Text']))
-        target_model_id = get_target_of_pin_recursively(output_pin, self.models, END_LABEL, self.input_pins, self.output_pins)
-        if target_model_id == END_LABEL:
-            self.log(path_file, f"label_{model_id} was not assigned any jump target in Articy, will jump to {END_LABEL}")
+        target_model_id = get_target_of_pin_recursively(output_pin, self.models, self.end_label, self.input_pins, self.output_pins)
+        if target_model_id == self.end_label:
+            self.log(path_file, f"label_{model_id} was not assigned any jump target in Articy, will jump to {self.end_label}")
             target_label = target_model_id
         else:
-            target_label = f'{LABEL_PREFIX}{target_model_id}'
+            target_label = f'{self.label_prefix}{target_model_id}'
         lines.append(f'{INDENT}jump {target_label}\n')
         return lines
 
@@ -414,7 +422,7 @@ class Converter:
             path_to_img = str(path_to_img)
             path_to_img = path_to_img.replace('\\', '/')
             # Following line removes the directory prefixes
-            path_to_img = path_to_img.replace('/' + FILE_PREFIX, '/')
+            path_to_img = path_to_img.replace('/' + self.file_prefix, '/')
             path_tmp = self.path_renpy_game_dir / path_to_img
             if not path_tmp.is_file():
                 model_id = model['Properties']['Id']
@@ -446,7 +454,7 @@ class Converter:
 
         for connection in connections:
             choice_id = connection['Target']
-            choice_label = f'{LABEL_PREFIX}{choice_id}'
+            choice_label = f'{self.label_prefix}{choice_id}'
             choice_input_pin_id = connection['TargetPin']
             choice_model = get_model_with_id(choice_id, self.models)
             choice_text = get_choice_text(choice_model)
@@ -489,7 +497,7 @@ class Converter:
     def write_file_for_flow_fragment_id(self, flow_fragment_id: str):
         '''Writes a file for a FlowFragment and all elements that have that FlowFragment as a parent.
         The file contains the RenPy code of all mentioned elements.'''
-        path_file = self.hierarchy_path_map[flow_fragment_id] / f'{FILE_PREFIX}{self.hierarchy_path_map[flow_fragment_id].stem}.rpy'
+        path_file = self.hierarchy_path_map[flow_fragment_id] / f'{self.file_prefix}{self.hierarchy_path_map[flow_fragment_id].stem}.rpy'
         with open(path_file, 'w') as f:
             f.write('\n')
         flow_fragment = get_model_with_id(flow_fragment_id, self.models)
@@ -500,7 +508,7 @@ class Converter:
 
     def write_file_for_variables(self):
         '''Writes a file for all variables'''
-        path_file = self.path_base_dir / VARIABLES_FILE_NAME
+        path_file = self.path_base_dir / self.variables_file_name
         lines = []
         for namespace in self.global_variables:
             lines.extend(self.lines_of_namespace(namespace))
@@ -551,18 +559,18 @@ class Converter:
         lines = [
             '# Entry point of the game\n',
             'label start:\n',
-            f'{INDENT}jump {LABEL_PREFIX}{start_id}\n',
+            f'{INDENT}jump {self.label_prefix}{start_id}\n',
             '\n',
-            f'label {END_LABEL}:\n',
+            f'label {self.end_label}:\n',
             f'{INDENT}return\n'
         ]
-        self.path_base_file = self.path_base_dir / BASE_FILE_NAME
+        self.path_base_file = self.path_base_dir / self.base_file_name
         with open(self.path_base_file, 'w') as f:
             f.writelines(lines)
 
     def write_characters_file(self):
         '''Writes a file with the definitions of characters'''
-        path_file = self.path_base_dir / CHARACTERS_FILE_NAME
+        path_file = self.path_base_dir / self.characters_file_name
         lines = []
         for model in self.models:
             if model['Type'] not in self.entity_types:
@@ -580,9 +588,9 @@ class Converter:
         character_name = str(model['Properties']['DisplayName']).split(' ')[0].lower().strip()
         if character_name == "":
             character_name = "unnamed"
-            path_file = self.path_base_dir / CHARACTERS_FILE_NAME
+            path_file = self.path_base_dir / self.characters_file_name
             self.log(path_file, f"Unnamed character with ID {model['Properties']['Id']}")
-        character_name = CHARACTER_PREFIX + character_name
+        character_name = self.character_prefix + character_name
         character_name = get_free_character_name(character_name, self.entity_id_to_character_name_map)
         self.entity_id_to_character_name_map[model['Properties']['Id']] = character_name
         self.add_new_definition(character_name)
@@ -593,7 +601,7 @@ class Converter:
         params = {}
         if 'Template' in model.keys():
             for feature_name in model['Template']:
-                if feature_name not in FEATURES_RENPY_CHARACTER_PARAMS:
+                if feature_name not in self.features_renpy_character_params:
                     continue
                 for parameter in model['Template'][feature_name]:
                     # if the field is not empty
@@ -615,7 +623,7 @@ class Converter:
     
     def write_log_file(self) -> None:
         
-        path_log_file = self.path_base_dir / LOG_FILE_NAME
+        path_log_file = self.path_base_dir / self.log_file_name
 
         with open(path_log_file, 'w') as f:
             f.write("\n")
@@ -657,7 +665,7 @@ class Converter:
                 msg = f"Did not expect directory \"{path_item.name}\" in directory {self.path_base_dir}"
                 raise UnexpectedContentException(msg)
 
-            if not path_item.is_dir() and FILE_PREFIX != path_item.name[:len(FILE_PREFIX)]:
+            if not path_item.is_dir() and self.file_prefix != path_item.name[:len(self.file_prefix)]:
                 msg = f"Did not expect file \"{path_item.name}\" in directory {self.path_base_dir}"
                 raise UnexpectedContentException(msg)
 
@@ -676,8 +684,76 @@ class Converter:
 
 
 if __name__ == '__main__':
+
+    if len(sys.argv) > 1:
+        path_config = Path(sys.argv[1])
+    else:
+        path_config = Path(__file__).parent / 'config.ini'
+
+    config = ConfigParser()
+    config.read(path_config)
+    
+    ############################
+    ### Paths and file names ###
+    ############################
+
+    # This file is the JSON export of the Articy project
+    path_articy_export_file = Path(config['Paths']['ArticyExportFile'])
+    # The generated code will go in this directory
+    path_renpy_articy_dir = Path(config['Paths']['RenPyArticyDir'])
+    # This is the prefix for all files under RenPyArticyDir
+    file_prefix = config['Paths']['GeneratedFilePrefix']
+    # Log file
+    log_file_name = config['Paths']['LogFileName']
+    # Generated code base file
+    base_file_name = config['Paths']['BaseFileName']
+    # Variables file 
+    variables_file_name = config['Paths']['VariablesFileName']
+    # Characters file
+    characters_file_name = config['Paths']['CharactersFileName']
+
+
+    ###########################
+    ### RenPy code settings ###
+    ###########################
+
+    # Prefix for the labels that can be jumped to
+    label_prefix = config['Renpy']['LabelPrefix']
+    # Label of the RenPy block that ends the game
+    # All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game
+    end_label = config['Renpy']['EndLabel']
+    # Prefix for the character entities in RenPy
+    character_prefix = config['Renpy']['CharacterPrefix']
+
+
+    ####################
+    ### Articy stuff ###
+    ####################
+
+    # Technical names of features that contain parameters for RenPy Character objects (comma separated values)
+    features_renpy_character_params = config['Articy']['FeaturesRenPyCharacterParams'].split(",")
+    features_renpy_character_params = [x.strip() for x in features_renpy_character_params if x.strip()]
+    # Name of the template that indicates a block with RenPy-code.
+    renpy_box = config['Articy']['RenPyBox']
+    # Name of the template that is generated with a manually given label.
+    renpy_entrypoint = config['Articy']['RenPyEntryPoint']
+    # Name of the template that is generated with a manually given label.
+    renpy_menu_choice = config['Articy']['RenPyMenuChoice']
+
     converter = Converter(
-        PATH_ARTICY_EXPORT_FILE,
-        PATH_RENPY_ARTICY_DIR
+        path_articy_export_file,
+        path_renpy_articy_dir,
+        file_prefix=file_prefix,
+        log_file_name=log_file_name,
+        base_file_name=base_file_name,
+        variables_file_name=variables_file_name,
+        characters_file_name=characters_file_name,
+        label_prefix=label_prefix,
+        end_label=end_label,
+        character_prefix=character_prefix,
+        features_renpy_character_params=features_renpy_character_params,
+        renpy_box=renpy_box,
+        renpy_entrypoint=renpy_entrypoint,
+        renpy_menu_choice=renpy_menu_choice
     )
     converter.run()
