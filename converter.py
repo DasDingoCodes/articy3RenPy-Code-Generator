@@ -552,7 +552,7 @@ class Converter:
             'label start:\n',
             f'{INDENT}jump {LABEL_PREFIX}{start_id}\n',
             '\n',
-            f'label {LABEL_PREFIX}{END_LABEL}:\n',
+            f'label {END_LABEL}:\n',
             f'{INDENT}return\n'
         ]
         self.path_base_file = self.path_base_dir / BASE_FILE_NAME
