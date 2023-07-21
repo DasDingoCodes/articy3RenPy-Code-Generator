@@ -17,8 +17,8 @@ class Converter:
 
     def __init__(
         self, 
-        path_json: Path, 
-        path_target_dir: Path,
+        path_articy_json: str, 
+        path_target_dir: str,
         file_prefix: str = "articy_",
         log_file_name: str = "log.txt",
         base_file_name: str = "start.rpy",
@@ -27,18 +27,18 @@ class Converter:
         label_prefix: str = "label_",
         end_label: str = "end",
         character_prefix: str = "character_",
-        features_renpy_character_params: list = ["RenPyCharacterParams"],
+        features_renpy_character_params: str = "RenPyCharacterParams",
         renpy_box: str = "RenPyBox",
         renpy_entrypoint: str = "RenPyEntryPoint",
-        renpy_menu_choice: str = "RenPyMenuChoice",
+        menu_display_text_box: str = "True",
         **kwargs
     ):
         """
         Parameters
         ----------
-        path_json : pathlib.Path
+        path_articy_json : str
             Path towards Articy's JSON export file
-        path_target_dir : pathlib.Path
+        path_target_dir : str
             Path towards dir that shall contain the generated code. 
             Must be inside the "game" dir of the RenPy game.
         file_prefix : str (default: "articy_") 
@@ -57,8 +57,9 @@ class Converter:
             The label_prefix will be prepended.
         character_prefix : str (default: "character_")
             Prefix that will be added to the generated character objects.
-        features_renpy_character_params : list (default ["RenPyCharacterParams"])
+        features_renpy_character_params : str (default "RenPyCharacterParams")
             Manually created features that contain parameters for RenPy characters. 
+            Can be multiple comma separated values.
             The property of such a feature should be a parameter name of the RenPy Character class. 
             For example, the feature "RenPyCharacterParams" contains the property "name" and its value is "'Alice'".
             Then the Character object will be generated with "Character([...]name='Alice',[...])". 
@@ -68,13 +69,12 @@ class Converter:
             RenPy-code as in non-narration or non-dialogue, that is.
         renpy_entrypoint : str (default: "RenPyEntryPoint")
             Name of the template that is used to generated blocks with manually set labels.
-        renpy_menu_choice : str (default: "RenPyMenuChoice")
-            Name of the template for a menu choice item that generates RenPy-code immediately after a menu choice before narration or dialogue.
-            RenPy-code as in non-narration or non-dialogue, that is.
+        menu_display_text_box : str (default: "True")
+            Whether to display the text box when displaying menu choices.
         """
 
-        self.path_json = path_json
-        self.path_base_dir = path_target_dir
+        self.path_articy_json = Path(path_articy_json)
+        self.path_base_dir = Path(path_target_dir)
         self.file_prefix = file_prefix
         self.log_file_name = file_prefix + log_file_name
         self.base_file_name = file_prefix + base_file_name
@@ -83,10 +83,10 @@ class Converter:
         self.label_prefix = label_prefix
         self.end_label = label_prefix + end_label
         self.character_prefix = character_prefix
-        self.features_renpy_character_params = features_renpy_character_params
+        self.features_renpy_character_params = [x.strip() for x in features_renpy_character_params.split(',') if x.strip()]
         self.renpy_box = renpy_box
         self.renpy_entrypoint = renpy_entrypoint
-        self.renpy_menu_choice = renpy_menu_choice
+        self.menu_display_text_box = menu_display_text_box.lower() == "true"
 
         self.path_renpy_game_dir = None
         for path_parent_dir in self.path_base_dir.absolute().parents:
@@ -145,7 +145,7 @@ class Converter:
         '''Read data from given json file and sets up model objects, in- and output-pins, hierarchy flow and global variables'''
 
         self.data = {}
-        with open(self.path_json) as f:
+        with open(self.path_articy_json) as f:
             self.data = json.load(f)
         
         self.models = self.data['Packages'][0]['Models']
@@ -228,8 +228,6 @@ class Converter:
             lines = self.lines_of_instruction_node(model, rel_path_to_file)
         elif model_type == self.renpy_entrypoint:
             lines = self.lines_of_renpy_entry_point(model, rel_path_to_file)
-        elif model_type == self.renpy_menu_choice:
-            lines = self.lines_of_renpy_box_menu_choice(model, rel_path_to_file)
         elif model_type in ignore_model_types:
             # do nothing for these 
             pass
@@ -251,19 +249,24 @@ class Converter:
         lines.append('\n')
         return lines
 
-    def lines_of_renpy_box_menu_choice(self, model: dict, path_file: Path) -> list:
-        '''Lines of RenPyMenuChoice. May contain both RenPy code and dialogue/exposition'''
+    def lines_of_renpy_box(self, model: dict, path_file: Path) -> list:
+        '''Lines of RenPyBox. 
+        Mainly used to generate RenPy code. Generates dialogue/narration afterwards if given.
+        RenPyBox should contain 
+         - RenPy code in "Text"
+         - (optional) dialogue/narration in "MenuText"
+         - (optional) instructions in "StageDirections"'''
         text = model['Properties']['Text']
         stage_directions = model['Properties']['StageDirections']
         lines = self.lines_of_label(model)
-        lines.extend(f'{INDENT}# {self.renpy_menu_choice}\n')
+        lines.extend(f'{INDENT}# {self.renpy_box}\n')
         if text:
             lines.extend(self.lines_of_renpy_logic(text, model, path_file))
         
         # if MenuText should be repeated after this Fragment was chosen then add it to the lines
-        if 'dont_repeat_menu_text' not in stage_directions:
+        if model['Properties']['MenuText'] != "" and 'dont_repeat_menu_text' not in stage_directions:
             speaker_name = get_speaker_name(model, self.entity_id_to_character_name_map)
-            model_text_lines = lines_of_model_text(model, text_attr="MenuText")
+            model_text_lines = lines_of_model_text(model, text_attr="MenuText", separator="\r\n")
             for line in model_text_lines:
                 lines.append(f'{INDENT}{speaker_name}\"{line}\"\n')
             
@@ -296,15 +299,6 @@ class Converter:
     def lines_of_hub_node(self, model: dict, path_file: Path) -> list:
         lines = self.lines_of_label(model)
         lines.extend(self.comment_lines(model))
-        lines.extend(self.lines_of_jump_logic(model, path_file))
-        lines.append('\n')
-        return lines
-
-    def lines_of_renpy_box(self, model: dict, path_file: Path) -> list:
-        lines = self.lines_of_label(model)
-        lines.extend(self.comment_lines(model,attr_to_ignore=['Text']))
-        model_text = model['Properties']['Text']
-        lines.extend(self.lines_of_renpy_logic(model_text, model, path_file))
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')
         return lines
@@ -374,7 +368,13 @@ class Converter:
         elif len(pins[0]['Connections']) == 1:
             return self.lines_of_single_jump(pins[0], model_id, path_file)
         else:
-            return self.lines_of_menu(pins)
+            display_text_box = self.menu_display_text_box
+            stage_directions = model['Properties']['StageDirections']
+            if "dont_display_text_box" in stage_directions:
+                display_text_box = False
+            elif "display_text_box" in stage_directions:
+                display_text_box = True
+            return self.lines_of_menu(pins, display_text_box=display_text_box)
 
     def lines_of_single_jump(self, output_pin: dict, model_id: str, path_file: Path) -> list:
         '''Lines of jump logic for a model with only one target to jump to.'''
@@ -444,11 +444,12 @@ class Converter:
                 lines.append(f'{INDENT*indent_lvl}$ {instruction}\n')
         return lines
 
-    def lines_of_menu(self, pins: list) -> list:
+    def lines_of_menu(self, pins: list, display_text_box: bool) -> list:
         lines = [
             f'{INDENT}menu:\n'
         ]
-        lines.append(f'{INDENT*2}extend ""\n\n') # extra line so that text box is still displayed in menu
+        if display_text_box:
+            lines.append(f'{INDENT*2}extend ""\n\n') # extra line so that text box is still displayed in menu
         connections = pins[0]['Connections']
         # sort connections by the indices of their target models
         connections = sorted(connections, key=lambda connection: get_connection_index(connection, self.models))
@@ -695,66 +696,9 @@ if __name__ == '__main__':
     config.read(path_config)
 
     parameters = dict()
+    for section in config.sections():
+        for (parameter, value) in config.items(section):
+            parameters[parameter] = value
     
-    ############################
-    ### Paths and file names ###
-    ############################
-
-    # This file is the JSON export of the Articy project
-    path_articy_export_file = Path(config['Paths']['ArticyExportFile'])
-    # The generated code will go in this directory
-    path_renpy_articy_dir = Path(config['Paths']['RenPyArticyDir'])
-
-    # This is the prefix for all files under RenPyArticyDir
-    if config.has_option("Paths", "file_prefix"):
-        parameters["file_prefix"] = config['Paths']['GeneratedFilePrefix']
-    # Log file
-    if config.has_option("Paths", "log_file_name"):
-        parameters["log_file_name"] = config['Paths']['LogFileName']
-    # Generated code base file
-    if config.has_option("Paths", "base_file_name"):
-        parameters["base_file_name"] = config['Paths']['BaseFileName']
-    # Variables file 
-    if config.has_option("Paths", "variables_file_name"):
-        parameters["variables_file_name"] = config['Paths']['VariablesFileName']
-    # Characters file
-    if config.has_option("Paths", "characters_file_name"):
-        parameters["characters_file_name"] = config['Paths']['CharactersFileName']
-
-
-    ###########################
-    ### RenPy code settings ###
-    ###########################
-
-    # Prefix for the labels that can be jumped to
-    if config.has_option("Renpy", "label_prefix"):
-        parameters["label_prefix"] = config['Renpy']['LabelPrefix']
-    # Label of the RenPy block that ends the game
-    # All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game
-    if config.has_option("Renpy", "end_label"):
-        parameters["end_label"] = config['Renpy']['EndLabel']
-    # Prefix for the character entities in RenPy
-    if config.has_option("Renpy", "character_prefix"):
-        parameters["character_prefix"] = config['Renpy']['CharacterPrefix']
-
-
-    ####################
-    ### Articy stuff ###
-    ####################
-
-    # Technical names of features that contain parameters for RenPy Character objects (comma separated values)
-    if config.has_option("Articy", "features_renpy_character_params"):
-        features_renpy_character_params = config['Articy']['FeaturesRenPyCharacterParams'].split(",")
-        parameters["features_renpy_character_params"] = [x.strip() for x in features_renpy_character_params if x.strip()]
-    # Name of the template that indicates a block with RenPy-code.
-    if config.has_option("Articy", "renpy_box"):
-        parameters["renpy_box"] = config['Articy']['RenPyBox']
-    # Name of the template that is generated with a manually given label.
-    if config.has_option("Articy", "renpy_entrypoint"):
-        parameters["renpy_entrypoint"] = config['Articy']['RenPyEntryPoint']
-    # Name of the template that is generated with a manually given label.
-    if config.has_option("Articy", "renpy_menu_choice"):
-        parameters["renpy_menu_choice"] = config['Articy']['RenPyMenuChoice']
-
-    converter = Converter(path_articy_export_file, path_renpy_articy_dir, **parameters)
+    converter = Converter(**parameters)
     converter.run()
