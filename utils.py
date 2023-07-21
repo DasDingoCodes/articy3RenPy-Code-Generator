@@ -37,20 +37,20 @@ def get_models_with_parent(parent_id: str, models: dict) -> list:
             child_models.append(model)
     return child_models
 
-def get_target_of_pin_recursively(output_pin: dict, models: dict, end_label: str, input_pins: set, output_pins: set) -> str:
+def get_target_of_pin_recursively(output_pin: dict, models: dict, input_pins: set, output_pins: set) -> str:
     '''The target of an output pin may be another output pin (if FlowFragment is last element in another FlowFragment).
     This function goes from an output pin to its target until the target is an input pin and returns its owner id'''
 
     # if the output pin has no connections, it is the end of the game.
     if 'Connections' not in output_pin.keys():
-        return end_label
+        return None
     target_pin_id = output_pin['Connections'][0]['TargetPin']
     if target_pin_id in input_pins:
         next_pin = get_input_pin_with_id(target_pin_id, models)
         return next_pin['Owner']
     elif target_pin_id in output_pins:
         next_pin = get_output_pin_with_id(target_pin_id, models)
-        return get_target_of_pin_recursively(next_pin, models, end_label, input_pins, output_pins)
+        return get_target_of_pin_recursively(next_pin, models, input_pins, output_pins)
     else:
         raise ValueError(f'target_pin_id {target_pin_id} neither in input_pins nor in output_pins')
 
@@ -201,10 +201,11 @@ def numbers_in_str(text: str) -> int:
 
 def get_substr_between(text: str, left: str, right: str) -> str:
     '''Returns the substring of text between left and right'''
-    index_left = text.find(left)+len(left)
-    index_right= text.find(right, index_left)
+    index_left = text.find(left)
+    index_right= text.find(right, index_left + len(left))
     if index_left == -1 or index_right == -1:
         return None
+    index_left = index_left + len(left)
     return text[index_left : index_right]
 
 def get_speaker_name(model: dict, entity_id_to_character_name_map: dict) -> str:
@@ -220,6 +221,19 @@ def get_speaker_name(model: dict, entity_id_to_character_name_map: dict) -> str:
     if speaker_name:
         speaker_name = speaker_name + ' '
     return speaker_name
+
+def get_label(model: dict, label_prefix="label_") -> str:
+    '''Returns the label of the given model'''
+    # Check if label was given via stage directions
+    if 'StageDirections' in model['Properties']:
+        stage_directions = model['Properties']['StageDirections']
+        stage_directions_label = get_substr_between(stage_directions, 'label="', '"')
+        if stage_directions_label is not None:
+            return stage_directions_label
+    
+    # If not stage directions, then make label with with label_prefix and model_id
+    model_id = model['Properties']['Id']
+    return f'{label_prefix}{model_id}'
 
 def lines_of_model_text(model: dict, separator = "\r\n\r\n", text_attr = "Text") -> list:
     '''Returns the lines of model text as list of strings.

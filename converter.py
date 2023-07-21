@@ -321,10 +321,12 @@ class Converter:
         return lines
 
     def lines_of_jump_node(self, model:dict) -> list:
-        model_target = model['Properties']['Target']
+        model_target_id = model['Properties']['Target']
         lines = self.lines_of_label(model)
         lines.extend(self.comment_lines(model))
-        lines.append(f'{INDENT}jump {self.label_prefix}{model_target}\n')
+        target_model = get_model_with_id(model_target_id, self.models)
+        target_label = get_label(target_model, label_prefix=self.label_prefix)
+        lines.append(f'{INDENT}jump {target_label}\n')
         lines.append('\n')
         return lines
 
@@ -340,14 +342,18 @@ class Converter:
         lines.extend(self.comment_lines(model, attr_to_ignore=['DisplayName']))
         condition_text = model['Properties']['Expression'].replace('\r', ' ').replace('\n', ' ')
         condition = convert_condition_from_articy_to_python(condition_text)
+        # if
         lines.append(f'{INDENT}if {condition}:\n')
-        target_id = model['Properties']['OutputPins'][0]['Connections'][0]['Target']
-        target_label = f'{self.label_prefix}{target_id}'
-        lines.append(f'{INDENT*2}jump {target_label}\n')
+        target_id_if = model['Properties']['OutputPins'][0]['Connections'][0]['Target']
+        target_model_if = get_model_with_id(target_id_if, self.models)
+        target_label_if = get_label(target_model_if, label_prefix=self.label_prefix)
+        lines.append(f'{INDENT*2}jump {target_label_if}\n')
+        # else
         lines.append(f'{INDENT}else:\n')
-        target_id = model['Properties']['OutputPins'][1]['Connections'][0]['Target']
-        target_label = f'{self.label_prefix}{target_id}'
-        lines.append(f'{INDENT*2}jump {target_label}\n')
+        target_id_else = model['Properties']['OutputPins'][1]['Connections'][0]['Target']
+        target_model_else = get_model_with_id(target_id_else, self.models)
+        target_label_else = get_label(target_model_else, label_prefix=self.label_prefix)
+        lines.append(f'{INDENT*2}jump {target_label_else}\n')
         lines.append('\n')
         return lines
 
@@ -371,10 +377,10 @@ class Converter:
 
     def lines_of_label(self, model: dict) -> list:
         '''Returns lines of the RenPy label logic'''
-        model_id = model['Properties']['Id']
-        self.add_new_definition(f'{self.label_prefix}{model_id}')
+        label = get_label(model, label_prefix=self.label_prefix)
+        self.add_new_definition(label)
         return [
-            f'label {self.label_prefix}{model_id}:\n'
+            f'label {label}:\n'
         ]
 
     def lines_of_jump_logic(self, model: dict, path_file: Path) -> list:
@@ -415,12 +421,13 @@ class Converter:
         
         # Add instructions if output_pin contains any instructions in the text field
         lines.extend(self.lines_of_expression(output_pin['Text']))
-        target_model_id = get_target_of_pin_recursively(output_pin, self.models, self.end_label, self.input_pins, self.output_pins)
-        if target_model_id == self.end_label:
+        target_model_id = get_target_of_pin_recursively(output_pin, self.models, self.input_pins, self.output_pins)
+        if target_model_id == None:
             self.log(path_file, f"label_{model_id} was not assigned any jump target in Articy, will jump to {self.end_label}")
-            target_label = target_model_id
+            target_label = self.end_label
         else:
-            target_label = f'{self.label_prefix}{target_model_id}'
+            model = get_model_with_id(target_model_id, self.models)
+            target_label = get_label(model, label_prefix=self.label_prefix)
         lines.append(f'{INDENT}jump {target_label}\n')
         return lines
 
@@ -489,9 +496,9 @@ class Converter:
 
         for connection in connections:
             choice_id = connection['Target']
-            choice_label = f'{self.label_prefix}{choice_id}'
-            choice_input_pin_id = connection['TargetPin']
             choice_model = get_model_with_id(choice_id, self.models)
+            choice_label = get_label(choice_model, label_prefix=self.label_prefix)
+            choice_input_pin_id = connection['TargetPin']
             choice_text = get_choice_text(choice_model, connection)
             if choice_text == '':
                 raise InvalidArticy(f'Could not get choice text for connection with target model {choice_id}')
@@ -593,10 +600,12 @@ class Converter:
         '''Writes a file with the start and end jump labels'''
         # The first model in the uppermost hierarchical element is assumed to be the starting point of the game
         start_id = self.hierarchy_flow[0]['Id']
+        start_model = get_model_with_id(start_id, self.models)
+        start_label = get_label(start_model, label_prefix=self.label_prefix)
         lines = [
             '# Entry point of the game\n',
             'label start:\n',
-            f'{INDENT}jump {self.label_prefix}{start_id}\n',
+            f'{INDENT}jump {start_label}\n',
             '\n',
             f'label {self.end_label}:\n',
             f'{INDENT}return\n'
