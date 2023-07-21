@@ -29,7 +29,6 @@ class Converter:
         character_prefix: str = "character_",
         features_renpy_character_params: str = "RenPyCharacterParams",
         renpy_box: str = "RenPyBox",
-        renpy_entrypoint: str = "RenPyEntryPoint",
         menu_display_text_box: str = "True",
         **kwargs
     ):
@@ -67,8 +66,6 @@ class Converter:
         renpy_box : str (default: "RenPyBox") 
             Name of the template that indicates a block with RenPy-code. 
             RenPy-code as in non-narration or non-dialogue, that is.
-        renpy_entrypoint : str (default: "RenPyEntryPoint")
-            Name of the template that is used to generated blocks with manually set labels.
         menu_display_text_box : str (default: "True")
             Whether to display the text box when displaying menu choices.
         """
@@ -85,7 +82,6 @@ class Converter:
         self.character_prefix = character_prefix
         self.features_renpy_character_params = string_to_list(features_renpy_character_params)
         self.renpy_box_types = string_to_list(renpy_box)
-        self.renpy_entrypoint_types = string_to_list(renpy_entrypoint)
         self.menu_display_text_box = menu_display_text_box.lower() == "true"
 
         self.path_renpy_game_dir = None
@@ -204,8 +200,6 @@ class Converter:
                 continue
             if obj['Type'] in self.renpy_box_types:
                 continue
-            if obj['Type'] in self.renpy_entrypoint_types:
-                continue
             self.node_type_inheritance[obj['Class']].add(
                 obj['Type']
             )
@@ -258,8 +252,6 @@ class Converter:
             lines = self.lines_of_condition_node(model)
         elif model_type in self.node_type_inheritance['Instruction']:
             lines = self.lines_of_instruction_node(model, rel_path_to_file)
-        elif model_type in self.renpy_entrypoint_types:
-            lines = self.lines_of_renpy_entry_point(model, rel_path_to_file)
         elif model_type in ignore_model_types:
             # do nothing for these 
             pass
@@ -361,16 +353,6 @@ class Converter:
         lines = self.lines_of_label(model)
         lines.extend(self.comment_lines(model, attr_to_ignore=['DisplayName']))
         lines.extend(self.lines_of_expression(model['Properties']['Expression']))
-        lines.extend(self.lines_of_jump_logic(model, path_file))
-        lines.append('\n')
-        return lines
-
-    def lines_of_renpy_entry_point(self, model: dict, path_file: Path) -> list:
-        label = model['Properties']['Text']
-        lines = [
-            f'label {label}:\n',
-            f'{INDENT}# RenPyEntryPoint\n'
-        ]
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')
         return lines
