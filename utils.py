@@ -298,6 +298,11 @@ def preprocess_text(text: str) -> str:
     text = add_renpy_text_style_commands(text)
     return text
 
+def string_to_list(string: str, separator=",") -> list:
+    '''Converts string to a list by splitting it by the given separator.
+    Empty strings will be omitted.'''
+    return [x.strip() for x in string.split(separator) if x.strip()]
+
 class UnexpectedContentException(Exception):
     "Raised when contents of a directory are unexpected"
     pass

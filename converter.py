@@ -83,9 +83,9 @@ class Converter:
         self.label_prefix = label_prefix
         self.end_label = label_prefix + end_label
         self.character_prefix = character_prefix
-        self.features_renpy_character_params = [x.strip() for x in features_renpy_character_params.split(',') if x.strip()]
-        self.renpy_box = renpy_box
-        self.renpy_entrypoint = renpy_entrypoint
+        self.features_renpy_character_params = string_to_list(features_renpy_character_params)
+        self.renpy_box = string_to_list(renpy_box)
+        self.renpy_entrypoint = string_to_list(renpy_entrypoint)
         self.menu_display_text_box = menu_display_text_box.lower() == "true"
 
         self.path_renpy_game_dir = None
@@ -220,13 +220,13 @@ class Converter:
             lines = self.lines_of_jump_node(model)
         elif model_type == 'Hub':
             lines = self.lines_of_hub_node(model, rel_path_to_file)
-        elif model_type == self.renpy_box:
+        elif model_type in self.renpy_box:
             lines = self.lines_of_renpy_box(model, rel_path_to_file)
         elif model_type == 'Condition':
             lines = self.lines_of_condition_node(model)
         elif model_type == 'Instruction':
             lines = self.lines_of_instruction_node(model, rel_path_to_file)
-        elif model_type == self.renpy_entrypoint:
+        elif model_type in self.renpy_entrypoint:
             lines = self.lines_of_renpy_entry_point(model, rel_path_to_file)
         elif model_type in ignore_model_types:
             # do nothing for these 
@@ -259,7 +259,7 @@ class Converter:
         text = model['Properties']['Text']
         stage_directions = model['Properties']['StageDirections']
         lines = self.lines_of_label(model)
-        lines.extend(f'{INDENT}# {self.renpy_box}\n')
+        lines.extend(f'{INDENT}# {model["Type"]}\n')
         if text:
             lines.extend(self.lines_of_renpy_logic(text, model, path_file))
         
