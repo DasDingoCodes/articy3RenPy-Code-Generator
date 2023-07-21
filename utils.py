@@ -125,12 +125,17 @@ def contains_img_call(line: str) -> bool:
     
     return False
 
-def get_choice_text(model: dict) -> str:
-    # if no MenuText was set, use Text instead
-    if 'MenuText' not in model['Properties'].keys() or model['Properties']['MenuText'] == '':
-        return model['Properties']['Text']
-    else:
+def get_choice_text(model: dict, connection: dict) -> str:
+    '''Returns the choice text for a connection with model as the target.
+    If the model has a MenuText, then that will be returned.
+    If not, then the label of the connection will be returned.
+    If that is also not set, then the Text of the model will be returned.'''
+    if 'MenuText' in model['Properties'] and model['Properties']['MenuText'] != '':
         return model['Properties']['MenuText']
+    elif connection['Label'] != '':
+        return connection['Label']
+    else:
+        return model['Properties']['Text']
     
 def get_free_character_name(character_name: str, entity_id_to_character_name_map: dict) -> str:
     '''Returns a character name that is not yet in character_name_to_entity_id_map'''
@@ -306,6 +311,9 @@ def string_to_list(string: str, separator=",") -> list:
 class UnexpectedContentException(Exception):
     "Raised when contents of a directory are unexpected"
     pass
+
+class InvalidArticy(Exception):
+    "Raised when articy structure cannot be parsed to RenPy"
 
 
 if __name__ == "__main__":

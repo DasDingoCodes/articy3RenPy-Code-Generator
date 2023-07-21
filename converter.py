@@ -492,7 +492,9 @@ class Converter:
             choice_label = f'{self.label_prefix}{choice_id}'
             choice_input_pin_id = connection['TargetPin']
             choice_model = get_model_with_id(choice_id, self.models)
-            choice_text = get_choice_text(choice_model)
+            choice_text = get_choice_text(choice_model, connection)
+            if choice_text == '':
+                raise InvalidArticy(f'Could not get choice text for connection with target model {choice_id}')
             choice_text = preprocess_text(choice_text)
             # Check if there are conditions on the input pin of the choice
             choice_input_pin = get_input_pin_with_id(choice_input_pin_id, self.models, model=choice_model)
