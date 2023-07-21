@@ -84,8 +84,8 @@ class Converter:
         self.end_label = label_prefix + end_label
         self.character_prefix = character_prefix
         self.features_renpy_character_params = string_to_list(features_renpy_character_params)
-        self.renpy_box = string_to_list(renpy_box)
-        self.renpy_entrypoint = string_to_list(renpy_entrypoint)
+        self.renpy_box_types = string_to_list(renpy_box)
+        self.renpy_entrypoint_types = string_to_list(renpy_entrypoint)
         self.menu_display_text_box = menu_display_text_box.lower() == "true"
 
         self.path_renpy_game_dir = None
@@ -122,6 +122,17 @@ class Converter:
 
         # set of all technical names for entity templates 
         self.entity_types = {}
+
+        # dict storing type names inheriting from the base nodes
+        self.node_type_inheritance = {
+            'Condition': {'Condition'},
+            'DialogueFragment': {'DialogueFragment'},
+            'Dialogue': {'Dialogue'},
+            'FlowFragment': {'FlowFragment'},
+            'Hub': {'Hub'},
+            'Instruction': {'Instruction'},
+            'Jump': {'Jump'}
+        }
 
         # set of all definitions in RenPy files. An error should be raised if something is defined twice
         self.renpy_definitions = set()
@@ -179,6 +190,26 @@ class Converter:
                 continue
             self.entity_types.add(obj['Type'])
 
+        self.node_type_inheritance = {
+            'Condition': {'Condition'},
+            'DialogueFragment': {'DialogueFragment'},
+            'Dialogue': {'Dialogue'},
+            'FlowFragment': {'FlowFragment'},
+            'Hub': {'Hub'},
+            'Instruction': {'Instruction'},
+            'Jump': {'Jump'}
+        }
+        for obj in self.data['ObjectDefinitions']:
+            if obj['Class'] not in self.node_type_inheritance.keys():
+                continue
+            if obj['Type'] in self.renpy_box_types:
+                continue
+            if obj['Type'] in self.renpy_entrypoint_types:
+                continue
+            self.node_type_inheritance[obj['Class']].add(
+                obj['Type']
+            )
+
         self.entity_id_to_character_name_map = {}
         self.renpy_definitions = set()
         self.log_data = {}
@@ -187,8 +218,9 @@ class Converter:
         '''Creates directories for FlowFragments and updates the hierarchy_path_map'''
         element_id = hierarchy_element['Id']
         element_model = get_model_with_id(element_id, self.models)
-        if element_model['Type'] != 'FlowFragment' and element_model['Type'] != 'Dialogue':
-            return
+        if element_model['Type'] not in self.node_type_inheritance['FlowFragment']:
+            if element_model['Type'] not in self.node_type_inheritance['Dialogue']:
+                return
         element_display_name = element_model['Properties']['DisplayName']
         element_display_name = element_display_name.lower().replace(' ', '_')
         path_element_dir = (Path) (path_parent / element_display_name)
@@ -206,27 +238,27 @@ class Converter:
         model_type = model['Type']
         model_id = model['Properties']['Id']
         rel_path_to_file = path_file.relative_to(self.path_base_dir)
-        if model_type == 'DialogueFragment':
+        if model_type in self.node_type_inheritance['DialogueFragment']:
             lines = self.lines_of_dialogue_fragment(model, rel_path_to_file)
-        elif model_type == 'Dialogue': 
+        elif model_type in self.node_type_inheritance['Dialogue']: 
             if self.hierarchy_path_map[model_id] != path_file.parent:
                 return
             lines = self.lines_of_dialogue(model, rel_path_to_file)
-        elif model_type == 'FlowFragment':
+        elif model_type in self.node_type_inheritance['FlowFragment']:
             if self.hierarchy_path_map[model_id] != path_file.parent:
                 return
             lines = self.lines_of_flow_fragment(model, rel_path_to_file)
-        elif model_type == 'Jump':
+        elif model_type in self.node_type_inheritance['Jump']:
             lines = self.lines_of_jump_node(model)
-        elif model_type == 'Hub':
+        elif model_type in self.node_type_inheritance['Hub']:
             lines = self.lines_of_hub_node(model, rel_path_to_file)
-        elif model_type in self.renpy_box:
+        elif model_type in self.renpy_box_types:
             lines = self.lines_of_renpy_box(model, rel_path_to_file)
-        elif model_type == 'Condition':
+        elif model_type in self.node_type_inheritance['Condition']:
             lines = self.lines_of_condition_node(model)
-        elif model_type == 'Instruction':
+        elif model_type in self.node_type_inheritance['Instruction']:
             lines = self.lines_of_instruction_node(model, rel_path_to_file)
-        elif model_type in self.renpy_entrypoint:
+        elif model_type in self.renpy_entrypoint_types:
             lines = self.lines_of_renpy_entry_point(model, rel_path_to_file)
         elif model_type in ignore_model_types:
             # do nothing for these 
@@ -353,7 +385,7 @@ class Converter:
         # But first check if there is content in the FlowFragment. 
         # If there is no Connection from the input pin of a FlowFragment to anything, then the FlowFragment does not have any element inside
         # In that case, use the output pin of the FlowFragment to jump to the next target
-        if model['Type'] == 'FlowFragment' or model['Type'] == 'Dialogue':
+        if model['Type'] in self.node_type_inheritance['FlowFragment'] or model['Type'] in self.node_type_inheritance['Dialogue']:
             input_pins = get_input_pins_of_model(model)
             if 'Connections' in input_pins[0].keys():
                 pins = input_pins
@@ -369,11 +401,12 @@ class Converter:
             return self.lines_of_single_jump(pins[0], model_id, path_file)
         else:
             display_text_box = self.menu_display_text_box
-            stage_directions = model['Properties']['StageDirections']
-            if "dont_display_text_box" in stage_directions:
-                display_text_box = False
-            elif "display_text_box" in stage_directions:
-                display_text_box = True
+            if 'StageDirections' in model['Properties']:
+                stage_directions = model['Properties']['StageDirections']
+                if "dont_display_text_box" in stage_directions:
+                    display_text_box = False
+                elif "display_text_box" in stage_directions:
+                    display_text_box = True
             return self.lines_of_menu(pins, display_text_box=display_text_box)
 
     def lines_of_single_jump(self, output_pin: dict, model_id: str, path_file: Path) -> list:
