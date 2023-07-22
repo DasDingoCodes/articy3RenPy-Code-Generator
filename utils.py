@@ -322,6 +322,17 @@ def string_to_list(string: str, separator=",") -> list:
     Empty strings will be omitted.'''
     return [x.strip() for x in string.split(separator) if x.strip()]
 
+def text_starts_with(text: str, beginnings: list[str], lower: bool = True) -> bool:
+    '''Whether text starts with one of the strings in beginnings.
+    Everything is converted to lower case by default.'''
+    if lower:
+        text = text.lower()
+        beginnings = [beginning.lower() for beginning in beginnings]
+    for beginning in beginnings:
+        if text.startswith(beginning):
+            return True
+    return False
+
 class UnexpectedContentException(Exception):
     "Raised when contents of a directory are unexpected"
     pass

@@ -30,6 +30,7 @@ class Converter:
         features_renpy_character_params: str = "RenPyCharacterParams",
         renpy_box: str = "RenPyBox",
         menu_display_text_box: str = "True",
+        beginnings_log_lines: str = "# todo, #todo",
         **kwargs
     ):
         """
@@ -68,6 +69,10 @@ class Converter:
             RenPy-code as in non-narration or non-dialogue, that is.
         menu_display_text_box : str (default: "True")
             Whether to display the text box when displaying menu choices.
+        beginnings_log_lines : str (default: "# todo, #todo")
+            RenPy code lines beginning with the following comma separated strings will be logged.
+            Before checking if a line start with such a beginning, all texts are converted to lower case. 
+            So "# TODO: do the thing" would be logged with the default "# todo" 
         """
 
         self.path_articy_json = Path(path_articy_json)
@@ -83,6 +88,7 @@ class Converter:
         self.features_renpy_character_params = string_to_list(features_renpy_character_params)
         self.renpy_box_types = string_to_list(renpy_box)
         self.menu_display_text_box = menu_display_text_box.lower() == "true"
+        self.beginnings_log_lines = string_to_list(beginnings_log_lines)
 
         self.path_renpy_game_dir = None
         for path_parent_dir in self.path_base_dir.absolute().parents:
@@ -383,7 +389,8 @@ class Converter:
             self.log(path_file, f"No pins for model with ID {model_id}")
             return []
         elif 'Connections' not in pins[0] or len(pins[0]['Connections']) == 0:
-            self.log(path_file, f"label_{model_id} was not assigned any jump target in Articy, will jump to {self.end_label}")
+            label = get_label(model, label_prefix=self.label_prefix)
+            self.log(path_file, f"{label} was not assigned any jump target in Articy, will jump to {self.end_label}")
             return [f'{INDENT}jump {self.end_label}\n']
         elif len(pins[0]['Connections']) == 1:
             return self.lines_of_single_jump(pins[0], model_id, path_file)
@@ -405,7 +412,9 @@ class Converter:
         lines.extend(self.lines_of_expression(output_pin['Text']))
         target_model_id = get_target_of_pin_recursively(output_pin, self.models, self.input_pins, self.output_pins)
         if target_model_id == None:
-            self.log(path_file, f"label_{model_id} was not assigned any jump target in Articy, will jump to {self.end_label}")
+            model = get_model_with_id(model_id, self.models)
+            label = get_label(model, label_prefix=self.label_prefix)
+            self.log(path_file, f"{label} was not assigned any jump target in Articy, will jump to {self.end_label}")
             target_label = self.end_label
         else:
             model = get_model_with_id(target_model_id, self.models)
@@ -429,6 +438,7 @@ class Converter:
         input: scene image {test_img.png} with dissolve
         output: scene image 'images/game/test/test_img.png' with dissolve
         '''
+        label = get_label(model, label_prefix=self.label_prefix)
         while contains_img_call(line):
             img_name = get_substr_between(line, '{', '}')
             parent_id = model['Properties']['Parent']
@@ -448,10 +458,12 @@ class Converter:
             path_to_img = path_to_img.replace('/' + self.file_prefix, '/')
             path_tmp = self.path_renpy_game_dir / path_to_img
             if not path_tmp.is_file():
-                model_id = model['Properties']['Id']
-                self.log(path_file, f"label_{model_id} references non-existent file {path_to_img}")
+                self.log(path_file, f"{label} references non-existent file {path_to_img}")
             # Lastly, replace the placeholder with the actual path
             line = line.replace('{'+img_name+'}', f'\'{path_to_img}\'')
+
+        if text_starts_with(line, self.beginnings_log_lines):
+            self.log(path_file, f"{label} contains the following line: {line}")
 
         return line
 
