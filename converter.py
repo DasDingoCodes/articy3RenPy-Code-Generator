@@ -25,6 +25,7 @@ class Converter:
         variables_file_name: str = "variables.rpy",
         characters_file_name: str = "characters.rpy",
         label_prefix: str = "label_",
+        start_label: str = "start",
         end_label: str = "end",
         character_prefix: str = "character_",
         features_renpy_character_params: str = "RenPyCharacterParams",
@@ -50,11 +51,13 @@ class Converter:
         variables_file_name : str (default: "variables.rpy")
             Name of the file that contains the generated named stores. The file_prefix will be prepended.
         label_prefix : str (default: "label_")
-            Prefix that will be added to all auto-generated labels. Needs to start with a character.
+            Prefix that will be added to all auto-generated labels except start_label and end_label. Needs to start with a character.
+        start_label : str (default: "start")
+            Label of the RenPy block at the start of the articy generated content. 
+            If "start", then it is also the start of the RenPy game.  
         end_label : str (default: "end")
             Label of the RenPy block that blocks will jump to if they don't have a jump target in Articy. 
             The block only returns, thus ending the game.
-            The label_prefix will be prepended.
         character_prefix : str (default: "character_")
             Prefix that will be added to the generated character objects.
         features_renpy_character_params : str (default "RenPyCharacterParams")
@@ -83,7 +86,8 @@ class Converter:
         self.variables_file_name = file_prefix + variables_file_name
         self.characters_file_name = file_prefix + characters_file_name
         self.label_prefix = label_prefix
-        self.end_label = label_prefix + end_label
+        self.start_label = start_label
+        self.end_label = end_label
         self.character_prefix = character_prefix
         self.features_renpy_character_params = string_to_list(features_renpy_character_params)
         self.renpy_box_types = string_to_list(renpy_box)
@@ -593,13 +597,13 @@ class Converter:
     def write_base_file(self):
         '''Writes a file with the start and end jump labels'''
         # The first model in the uppermost hierarchical element is assumed to be the starting point of the game
-        start_id = self.hierarchy_flow[0]['Id']
-        start_model = get_model_with_id(start_id, self.models)
-        start_label = get_label(start_model, label_prefix=self.label_prefix)
+        first_model_id = self.hierarchy_flow[0]['Id']
+        first_model = get_model_with_id(first_model_id, self.models)
+        first_model_label = get_label(first_model, label_prefix=self.label_prefix)
         lines = [
             '# Entry point of the game\n',
-            'label start:\n',
-            f'{INDENT}jump {start_label}\n',
+            f'label {self.start_label}:\n',
+            f'{INDENT}jump {first_model_label}\n',
             '\n',
             f'label {self.end_label}:\n',
             f'{INDENT}return\n'
