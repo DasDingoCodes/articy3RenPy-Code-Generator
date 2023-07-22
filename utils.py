@@ -104,7 +104,7 @@ def add_escape_characters(text: str) -> str:
     See https://www.renpy.org/doc/html/text.html#escape-characters for more details'''
     text = text.replace(r'"', r'\"')
     text = text.replace(r"'", r"\'")
-    text = text.replace(r"%", r"%")
+    text = text.replace(r"%", r"\%")
     return text
 
 def remove_problematic_letters(text: str) -> str:
