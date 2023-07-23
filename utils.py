@@ -166,7 +166,7 @@ def get_template_display_name_by_type(type_str: str, object_definitions: list) -
 
 def get_choice_index(model: dict, index_default_value: int = 1904) -> int:
     '''Returns the index of the choice which is in Properties>StageDirections.
-    The stage directions are separated by ;
+    The stage directions are separated by ,
     This function will return all numbers of the first direction that contains
     numbers.
     If there is no index value in the stage directions then the function
@@ -180,24 +180,16 @@ def get_choice_index(model: dict, index_default_value: int = 1904) -> int:
     # if there are no stage directions, no index was given
     if stageDirections == "":
         return index_default_value
-    for stageDirection in stageDirections.split(';'):
-        numbers = numbers_in_str(stageDirection)
-        if numbers != None:
-            return numbers
+    stageDirections = [x.strip() for x in stageDirections.split(',')]
+    for stageDirection in stageDirections:
+        try:
+            index = int(stageDirection)
+            return index
+        except ValueError:
+            pass
     
     id_value = int(model['Properties']['Id'], 0) # automatically detect format and convert to int 
     return index_default_value + id_value
-
-def numbers_in_str(text: str) -> int:
-    '''Returns only the numbers of a text, None if none found'''
-    numbers_str = ''
-    for c in text:
-        if c.isdigit():
-            numbers_str += c
-    if numbers_str:
-        return int(numbers_str)
-    else:
-        return None
 
 def get_substr_between(text: str, left: str, right: str) -> str:
     '''Returns the substring of text between left and right'''
