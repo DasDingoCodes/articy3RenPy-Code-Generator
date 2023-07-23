@@ -27,7 +27,7 @@ class Converter:
         label_prefix: str = "label_",
         start_label: str = "start",
         end_label: str = "end",
-        character_prefix: str = "character_",
+        character_prefix: str = "character.",
         features_renpy_character_params: str = "RenPyCharacterParams",
         renpy_box: str = "RenPyBox",
         menu_display_text_box: str = "True",
@@ -59,7 +59,7 @@ class Converter:
         end_label : str (default: "end")
             Label of the RenPy block that blocks will jump to if they don't have a jump target in Articy. 
             The block only returns, thus ending the game.
-        character_prefix : str (default: "character_")
+        character_prefix : str (default: "character.")
             Prefix that will be added to the generated character objects.
         features_renpy_character_params : str (default "RenPyCharacterParams")
             Manually created features that contain parameters for RenPy characters. 
@@ -611,24 +611,23 @@ class Converter:
 
     def lines_of_namespace(self, namespace: dict) -> list:
         '''Returns the RenPy lines for a namespace i.e. set of variables'''
-        name = namespace['Namespace']
-        name = name[0].lower() + name[1:]
+        namespace_name = namespace['Namespace']
+        namespace_name = namespace_name[0].lower() + namespace_name[1:]
+        
         description = namespace['Description']
-        self.add_new_definition(name)
+        self.add_new_definition(namespace_name)
         lines = [
-            f'init python in {name}:\n'
+            f'Namespace: {namespace_name}\n'
         ]
-        lines.extend(self.comment_lines_formatter(description))
+        lines.extend(self.comment_lines_formatter(description, indent_lvl=0))
         lines.append('\n')
         for variable in namespace['Variables']:
-            lines.extend(self.lines_of_variable(variable))
+            lines.extend(self.lines_of_variable(variable, namespace_name))
         lines.append('\n')
         return lines
 
-    def lines_of_variable(self, variable: dict, indent_lvl=1) -> list:
-        '''Returns the RenPy lines for setting up a variable.
-        indent_lvl default is 1 because it is assumed that the variable is set up in 
-        a namespace (Articy) / named store (RenPy).'''
+    def lines_of_variable(self, variable: dict, namespace: str = "") -> list:
+        '''Returns the RenPy lines for setting up a variable.'''
         supported_variable_types = {'Boolean', 'Integer', 'String'}
         if variable['Type'] not in supported_variable_types:
             raise ValueError(f'Unexpected variable type: {variable["Type"]} in {variable}')
@@ -642,8 +641,10 @@ class Converter:
             value = '\"' + variable['Value'] + '\"'
         lines = []
         if description:
-            lines.extend(self.comment_lines_formatter(description, indent_lvl=indent_lvl))
-        lines.append(f'{INDENT*indent_lvl}{name} = {value}\n\n')
+            lines.extend(self.comment_lines_formatter(description, indent_lvl=0))
+        if namespace:
+            namespace = namespace + "."
+        lines.append(f'default {namespace}{name} = {value}\n\n')
         return lines
 
     def write_base_file(self):
