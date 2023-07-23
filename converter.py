@@ -273,14 +273,57 @@ class Converter:
             f.writelines(lines)
 
     def lines_of_dialogue_fragment(self, model: dict, path_file: Path) -> list:
+        '''Returns lines of a dialogue fragment, either dialogue or narration.'''
         lines = self.lines_of_label(model)
         lines.extend(self.comment_lines(model,attr_to_ignore=['Text']))
-        speaker_name = get_speaker_name(model, self.entity_id_to_character_name_map)
-        model_text_lines = lines_of_model_text(model)
-        for line in model_text_lines:
-            lines.append(f'{INDENT}{speaker_name}\"{line}\"\n')
+        lines.extend(self.lines_of_renpy_say(model, INDENT))
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')
+        return lines
+    
+    def lines_of_renpy_say(self, model: dict, indentation: str, **kwargs) -> list[str]:
+        '''Returns lines of the RenPy say statement for a given model with some indentation.
+
+        A line is as follows: {speaker_name}{instructions_before}"{line}"{instructions_after}
+            speaker_name: (optional)
+                Specified by StageDirections (e.g. 'speaker="Alice"') or by the model being assigned to an entity.
+                A space character will be appended if a speaker is set. 
+            instructions_before: (optional)
+                Specified by StageDirections (e.g. 'before="@ angry"').
+                A space character will be appended if an instruction is set.
+            line:
+                The line will be preprocessed.
+                That includes adding escape characters and parsing Markdown commands to RenPy text styles.
+            instructions_after: (optional)
+                Specified by StageDirections (e.g. 'after="with vpunch"')
+                A space character will be prepended if an instruction is set.
+
+        By default the raw model lines are taken from the Text attribute of the model.
+        But additional keyword arguments can be specified to extract the lines from other attributes.
+        For example, text_attr="MenuText" and separator="\r\n" extract from MenuText.
+        The keyword arguments should correspond to the lines_of_model_text function. 
+        '''
+        # get speaker name, if there is one, then append " " after it
+        speaker_name = get_speaker_name(model, self.entity_id_to_character_name_map)
+        if speaker_name != "":
+            speaker_name = speaker_name + " "
+        stage_directions = model['Properties']['StageDirections']
+        # get instructions before
+        instructions_before = get_substr_between(stage_directions, 'before="', '"')
+        if instructions_before is None:
+            instructions_before = ""
+        else:
+            instructions_before = instructions_before + " "
+        # get instructions after
+        instructions_after = get_substr_between(stage_directions, 'after="', '"')
+        if instructions_after is None:
+            instructions_after = ""
+        else:
+            instructions_after = " " + instructions_after
+        model_text_lines = lines_of_model_text(model, **kwargs)
+        lines = []
+        for line in model_text_lines:
+            lines.append(f'{indentation}{speaker_name}{instructions_before}\"{line}\"{instructions_after}\n')
         return lines
 
     def lines_of_renpy_box(self, model: dict, path_file: Path) -> list:
@@ -299,10 +342,7 @@ class Converter:
         
         # if MenuText should be repeated after this Fragment was chosen then add it to the lines
         if model['Properties']['MenuText'] != "" and 'dont_repeat_menu_text' not in stage_directions:
-            speaker_name = get_speaker_name(model, self.entity_id_to_character_name_map)
-            model_text_lines = lines_of_model_text(model, text_attr="MenuText", separator="\r\n")
-            for line in model_text_lines:
-                lines.append(f'{INDENT}{speaker_name}\"{line}\"\n')
+            lines.extend(self.lines_of_renpy_say(model, INDENT, text_attr="MenuText", separator="\r\n"))
             
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')

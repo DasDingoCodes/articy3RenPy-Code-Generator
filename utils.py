@@ -218,8 +218,6 @@ def get_speaker_name(model: dict, entity_id_to_character_name_map: dict) -> str:
     stage_directions_speaker = get_substr_between(stage_directions, 'speaker="', '"')
     if stage_directions_speaker:
         speaker_name = '"' + stage_directions_speaker + '"'
-    if speaker_name:
-        speaker_name = speaker_name + ' '
     return speaker_name
 
 def get_label(model: dict, label_prefix="label_") -> str:
