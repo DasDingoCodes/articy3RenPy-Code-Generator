@@ -173,23 +173,37 @@ def get_choice_index(model: dict, index_default_value: int = 1904) -> int:
     will return index_default_value + the ID of the model 
     which should be some nice high number'''
 
-    if 'StageDirections' not in model['Properties'].keys():
+    if 'StageDirections' not in model['Properties']:
         id_value = int(model['Properties']['Id'], 0)  # automatically detect format and convert to int 
         return index_default_value + id_value
-    stageDirections = str(model['Properties']['StageDirections'])
+    stage_directions = str(model['Properties']['StageDirections'])
     # if there are no stage directions, no index was given
-    if stageDirections == "":
+    if stage_directions == "":
         return index_default_value
-    stageDirections = [x.strip() for x in stageDirections.split(',')]
-    for stageDirection in stageDirections:
+    stage_directions = string_to_list(stage_directions, separator=",")
+    for stage_direction in stage_directions:
         try:
-            index = int(stageDirection)
+            index = int(stage_direction)
             return index
         except ValueError:
             pass
     
     id_value = int(model['Properties']['Id'], 0) # automatically detect format and convert to int 
     return index_default_value + id_value
+
+def has_stage_direction(model: dict, attribute: str) -> bool:
+    '''Whether a model has a specific attribute in its stage directions.
+    Returns False if model has no stage directions.'''
+    if 'StageDirections' not in model['Properties']:
+        return False
+    stage_directions = model['Properties']['StageDirections']
+    stage_directions = string_to_list(stage_directions, separator=",")
+    for stage_direction in stage_directions:
+        # remove spaces
+        stage_direction = stage_direction.replace(" ", "")
+        if stage_direction == attribute:
+            return True
+    return False
 
 def get_substr_between(text: str, left: str, right: str) -> str:
     '''Returns the substring of text between left and right'''
@@ -307,7 +321,7 @@ def preprocess_text(text: str) -> str:
     text = add_renpy_text_style_commands(text)
     return text
 
-def string_to_list(string: str, separator=",") -> list:
+def string_to_list(string: str, separator=",") -> list[str]:
     '''Converts string to a list by splitting it by the given separator.
     Empty strings will be omitted.'''
     return [x.strip() for x in string.split(separator) if x.strip()]

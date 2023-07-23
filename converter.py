@@ -334,14 +334,13 @@ class Converter:
          - (optional) dialogue/narration in "MenuText"
          - (optional) instructions in "StageDirections"'''
         text = model['Properties']['Text']
-        stage_directions = model['Properties']['StageDirections']
         lines = self.lines_of_label(model)
         lines.extend(f'{INDENT}# {model["Type"]}\n')
         if text:
             lines.extend(self.lines_of_renpy_logic(text, model, path_file))
         
         # if MenuText should be repeated after this Fragment was chosen then add it to the lines
-        if model['Properties']['MenuText'] != "" and 'dont_repeat_menu_text' not in stage_directions:
+        if model['Properties']['MenuText'] != "" and not has_stage_direction(model, 'repeat_menu_text=False'):
             lines.extend(self.lines_of_renpy_say(model, INDENT, text_attr="MenuText", separator="\r\n"))
             
         lines.extend(self.lines_of_jump_logic(model, path_file))
@@ -440,12 +439,10 @@ class Converter:
             return self.lines_of_single_jump(pins[0], model_id, path_file)
         else:
             display_text_box = self.menu_display_text_box
-            if 'StageDirections' in model['Properties']:
-                stage_directions = model['Properties']['StageDirections']
-                if "dont_display_text_box" in stage_directions:
-                    display_text_box = False
-                elif "display_text_box" in stage_directions:
-                    display_text_box = True
+            if has_stage_direction(model, "display_text_box=False"):
+                display_text_box = False
+            elif has_stage_direction(model, "display_text_box=True"):
+                display_text_box = True
             return self.lines_of_menu(pins, display_text_box=display_text_box)
 
     def lines_of_single_jump(self, output_pin: dict, model_id: str, path_file: Path) -> list:
@@ -558,13 +555,13 @@ class Converter:
         lines = [
             f'{INDENT}# {model_type}\n'
         ]
-        if 'DisplayName' not in attr_to_ignore and 'DisplayName' in model['Properties'].keys() and model['Properties']['DisplayName'] != '':
+        if 'DisplayName' not in attr_to_ignore and 'DisplayName' in model['Properties'] and model['Properties']['DisplayName'] != '':
             model_display_name = model['Properties']['DisplayName']
             lines.append(f'{INDENT}# {model_display_name}\n')
-        if 'StageDirections' not in attr_to_ignore and 'StageDirections' in model['Properties'].keys():
+        if 'StageDirections' not in attr_to_ignore and 'StageDirections' in model['Properties']:
             model_stage_directions = model['Properties']['StageDirections']
             lines.extend(self.comment_lines_formatter(model_stage_directions))
-        if 'Text' not in attr_to_ignore and 'Text' in model['Properties'].keys():
+        if 'Text' not in attr_to_ignore and 'Text' in model['Properties']:
             model_text = model['Properties']['Text']
             lines.extend(self.comment_lines_formatter(model_text))
         return lines
