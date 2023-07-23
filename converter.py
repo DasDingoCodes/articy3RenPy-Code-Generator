@@ -32,6 +32,7 @@ class Converter:
         renpy_box: str = "RenPyBox",
         menu_display_text_box: str = "True",
         beginnings_log_lines: str = "# todo, #todo",
+        markdown_text_styles: str = "False",
         **kwargs
     ):
         """
@@ -76,6 +77,9 @@ class Converter:
             RenPy code lines beginning with the following comma separated strings will be logged.
             Before checking if a line start with such a beginning, all texts are converted to lower case. 
             So "# TODO: do the thing" would be logged with the default "# todo" 
+        markdown_text_styles : str (default: "False")
+            Whether to parse simple markdown text styles, i.e. *italics*, **bold** or _underlined_. 
+            Can be overwritten for a model with the stage directions "markdown=True" or "markdown=False"
         """
 
         self.path_articy_json = Path(path_articy_json)
@@ -93,6 +97,7 @@ class Converter:
         self.renpy_box_types = string_to_list(renpy_box)
         self.menu_display_text_box = menu_display_text_box.lower() == "true"
         self.beginnings_log_lines = string_to_list(beginnings_log_lines)
+        self.markdown_text_styles = markdown_text_styles.lower() == "true"
 
         self.path_renpy_game_dir = None
         for path_parent_dir in self.path_base_dir.absolute().parents:
@@ -320,7 +325,12 @@ class Converter:
             instructions_after = ""
         else:
             instructions_after = " " + instructions_after
-        model_text_lines = lines_of_model_text(model, **kwargs)
+        markdown_text_styles = self.markdown_text_styles
+        if has_stage_direction(model, "markdown=True"):
+            markdown_text_styles = True
+        elif has_stage_direction(model, "markdown=False"):
+            markdown_text_styles = False
+        model_text_lines = lines_of_model_text(model, markdown_text_styles, **kwargs)
         lines = []
         for line in model_text_lines:
             lines.append(f'{indentation}{speaker_name}{instructions_before}\"{line}\"{instructions_after}\n')
@@ -537,7 +547,12 @@ class Converter:
             choice_text = get_choice_text(choice_model, connection)
             if choice_text == '':
                 raise InvalidArticy(f'Could not get choice text for connection with target model {choice_id}')
-            choice_text = preprocess_text(choice_text)
+            markdown_text_styles = self.markdown_text_styles
+            if has_stage_direction(choice_model, "markdown=True"):
+                markdown_text_styles = True
+            elif has_stage_direction(choice_model, "markdown=False"):
+                markdown_text_styles = False
+            choice_text = preprocess_text(choice_text, markdown_text_styles)
             # Check if there are conditions on the input pin of the choice
             choice_input_pin = get_input_pin_with_id(choice_input_pin_id, self.models, model=choice_model)
             # Make the condition a single line so that it can all fit in the same if statement
