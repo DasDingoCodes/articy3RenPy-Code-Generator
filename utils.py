@@ -239,8 +239,9 @@ def get_label(model: dict, label_prefix="label_") -> str:
     model_id = model['Properties']['Id']
     return f'{label_prefix}{model_id}'
 
-def lines_of_model_text(model: dict, separator = "\r\n\r\n", text_attr = "Text") -> list:
+def lines_of_model_text(model: dict, markdown_text_styles: bool, separator: str = "\r\n\r\n", text_attr: str = "Text") -> list:
     '''Returns the lines of model text as list of strings.
+    markdown_text_styles specifies whether Markdown commands for italic, bold and underlined text shall be parsed.
 
     text_attr is the key of the text that shall be returned. It should be one of the following:
      - "Text" (default)
@@ -248,7 +249,7 @@ def lines_of_model_text(model: dict, separator = "\r\n\r\n", text_attr = "Text")
      - "StageDirections"
     '''
     model_text = model['Properties'][text_attr]
-    model_text = preprocess_text(model_text)
+    model_text = preprocess_text(model_text, markdown_text_styles)
     model_text_lines = model_text.split(separator)
     return model_text_lines
 
@@ -310,15 +311,11 @@ def add_renpy_text_style_commands(text: str) -> str:
     
     return final_text
 
-def preprocess_text(text: str) -> str:
-    '''Preprocesses the given text.
-    
-    Calls the following functions:
-     - add_escape_characters() 
-     - add_renpy_text_style_commands
-    '''
+def preprocess_text(text: str, markdown_text_styles: bool) -> str:
+    '''Preprocesses the given text. Adds escape characters and -if specified- parses simple markdown commands.'''
     text = add_escape_characters(text)
-    text = add_renpy_text_style_commands(text)
+    if markdown_text_styles:
+        text = add_renpy_text_style_commands(text)
     return text
 
 def string_to_list(string: str, separator=",") -> list[str]:
@@ -343,4 +340,4 @@ class UnexpectedContentException(Exception):
 
 class InvalidArticy(Exception):
     "Raised when articy structure cannot be parsed to RenPy"
-
+    pass
