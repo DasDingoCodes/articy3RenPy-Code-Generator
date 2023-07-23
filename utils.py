@@ -344,17 +344,3 @@ class UnexpectedContentException(Exception):
 class InvalidArticy(Exception):
     "Raised when articy structure cannot be parsed to RenPy"
 
-
-if __name__ == "__main__":
-    model = {
-        'Properties' : {
-            'Text': r"The sudden yell wakes you from your sleep. Slowly you realise how uncomfortable the sacks under you are and wish you could have gotten your cabin as planned.\r\n\r\n" +
-            r"At least the ship is swaying only lightly at the moment, the sea seems to be calm tonight.\r\n\r\n" + 
-            r"The sailors on the other hand are anything but calm.\r\n\r\n" + 
-            r"From above, you hear orders being yelled and planks creaking under hasty steps.\r\n\r\n" + 
-            r"Unable to find back to your sleep, you open your eyes."
-        }
-    }
-    lines = lines_of_model_text(model)
-    for line in lines:
-        print(line)
