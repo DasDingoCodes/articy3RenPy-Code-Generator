@@ -617,7 +617,7 @@ class Converter:
         description = namespace['Description']
         self.add_new_definition(namespace_name)
         lines = [
-            f'Namespace: {namespace_name}\n'
+            f'# Namespace: {namespace_name}\n'
         ]
         lines.extend(self.comment_lines_formatter(description, indent_lvl=0))
         lines.append('\n')
