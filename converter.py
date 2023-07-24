@@ -280,7 +280,7 @@ class Converter:
     def lines_of_dialogue_fragment(self, model: dict, path_file: Path) -> list:
         '''Returns lines of a dialogue fragment, either dialogue or narration.'''
         lines = self.lines_of_label(model)
-        lines.extend(self.comment_lines(model,attr_to_ignore=['Text']))
+        lines.extend(self.comment_lines(model,attr_to_ignore=['Text', 'StageDirections']))
         lines.extend(self.lines_of_renpy_say(model, INDENT))
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')
