@@ -8,9 +8,28 @@ The goals of this Code Generator are:
  - Preventing redundancies. Don't use Articy to just plan out the flow of the game and then manually write RenPy code for it or you might run into consistency issues! If all the game logic is based on the Articy-project, then the code will always be consistent with it. 
  - Generating code that is easy to debug. The Code Generator does not create one big RenPy file with several thousands lines of code. Instead, it creates a hierarchy of directories that represents the story structure as given by the Articy-project. Also, a log file will give warnings in indicate precisely in which node they occured.
 
+## Showcase
+
+| ![Example menu](images/showcase_00.png) |
+| :---: |
+| Example menu with narration, dialogue and RenPy commands. The coloured highlights show where each part of the generated code comes from. The red box with the RenPy code is the custom **RenPyBox** template as defined in the [setup](#Creating-template-for-raw-RenPy-code). Simple markdown parsing is enabled in this example ("\*Walk away\*" to "{i}Walk away{/i}"). |
+
+| ![Example characters](images/showcase_01.png) |
+| :---: |
+| Example of Character objects being created from Articy entities. *Bob Baker* has the unchanged default ``Supporting characters`` template. *Alice Smith* and *Player Character* have the default ``Main Characters`` template extended with the custom **RenPyCharacterParams** feature as defined in the [setup](#-(optional)-Making-it-possible-to-pass-parameters-to-Character-objects). |
+
+| ![Example variables](images/showcase_02.png) |
+| :---: |
+| Example of Articy variables being set with their default values. |
+
+
+
 ## Requirements
 
-Python 3.9 or higher.
+Python 3.9 or higher. 
+
+As for RenPy, I have tested the Code Generator with RenPy 8.0.0. 
+The generated code is pretty basic, I imagine it works with previous versions as well. 
 
 ## Quickstart
 
