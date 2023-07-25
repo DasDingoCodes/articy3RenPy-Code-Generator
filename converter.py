@@ -507,16 +507,51 @@ class Converter:
             path_to_img = path_to_img.replace('\\', '/')
             # Following line removes the directory prefixes
             path_to_img = path_to_img.replace('/' + self.file_prefix, '/')
-            path_tmp = self.path_renpy_game_dir / path_to_img
-            if not path_tmp.is_file():
-                self.log(path_file, f"{label} references non-existent file {path_to_img}")
             # Lastly, replace the placeholder with the actual path
             line = line.replace('{'+img_name+'}', f'\'{path_to_img}\'')
 
+        # Check if line starts with something that should be logged, e.g. "# TODO"
         if text_starts_with(line, self.beginnings_log_lines):
             self.log(path_file, f"{label} contains the following line: {line}")
+        # Check if referenced files exist, log if not
+        self.check_file_references(line, path_file, label)
 
         return line
+    
+    def check_file_references(self, line: str, path_file: Path, label: str) -> None:
+        '''Checks if referenced files in line exist. 
+        Only image and audio files in quotation marks are considered.
+        Logs if a referenced file does not exist.'''
+
+        # Images
+        image_endings = [".png", ".jpg", ".jpeg", ".webp", ".gif"]
+        image_refs = []
+        image_refs.extend(file_references(line, image_endings, '"'))
+        image_refs.extend(file_references(line, image_endings, "'"))
+        for img_reference in image_refs:
+            path_reference = self.path_renpy_game_dir / img_reference
+            if path_reference.is_file():
+                continue
+            path_reference = self.path_renpy_game_dir / "images" / img_reference
+            if path_reference.is_file():
+                continue
+            self.log(path_file, f"{label} references non-existent file {img_reference}")
+
+        # Audio files
+        # remove angle brackets from strings like "<from 5 to 10>music.mp3"
+        line = re.sub(r"<(.*?)>", "", line)
+        audio_endings = [".mp3", ".wav", ".ogg", ".opus", ".flac"]
+        audio_refs = []
+        audio_refs.extend(file_references(line, audio_endings, '"'))
+        audio_refs.extend(file_references(line, audio_endings, "'"))
+        for audio_reference in audio_refs:
+            path_reference = self.path_renpy_game_dir / audio_reference
+            if path_reference.is_file():
+                continue
+            path_reference = self.path_renpy_game_dir / "audio" / audio_reference
+            if path_reference.is_file():
+                continue
+            self.log(path_file, f"{label} references non-existent file {audio_reference}")
 
     def lines_of_expression(self, expression: str, indent_lvl: int = 1) -> list:
         lines = []

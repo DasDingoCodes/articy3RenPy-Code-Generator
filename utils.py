@@ -334,6 +334,35 @@ def text_starts_with(text: str, beginnings: list[str], lower: bool = True) -> bo
             return True
     return False
 
+def text_ends_with(text: str, endings: list[str], lower: bool = True) -> bool:
+    '''Whether text ends with one of the strings in beginnings.
+    Everything is converted to lower case by default.'''
+    if lower:
+        text = text.lower()
+        endings = [ending.lower() for ending in endings]
+    for ending in endings:
+        if text.endswith(ending):
+            return True
+    return False
+
+def file_references(text: str, endings: list[str], separator: str) -> list[str]:
+    '''Returns file references with endings in text encapsulated by separator'''
+    splitted = [x.strip() for x in text.split(separator)]
+    files = []
+
+    for i, part in enumerate(splitted):
+        # only every second element in list is in quotes
+        if i%2 == 0:
+            continue
+        # if it is the last element, it is not in quotes and can be skipped
+        if i == len(splitted)-1:
+            continue
+
+        if text_ends_with(part, endings):
+            files.append(part)
+    
+    return files
+
 class UnexpectedContentException(Exception):
     "Raised when contents of a directory are unexpected"
     pass
