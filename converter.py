@@ -443,7 +443,7 @@ class Converter:
             return []
         elif 'Connections' not in pins[0] or len(pins[0]['Connections']) == 0:
             label = get_label(model, label_prefix=self.label_prefix)
-            self.log(path_file, f"{label} was not assigned any jump target in Articy, will jump to {self.end_label}")
+            self.log(path_file, f"{label} was not assigned any jump target in Articy, will jump to \"{self.end_label}\"")
             return [f'{INDENT}jump {self.end_label}\n']
         elif len(pins[0]['Connections']) == 1:
             return self.lines_of_single_jump(pins[0], model_id, path_file)
@@ -465,7 +465,7 @@ class Converter:
         if target_model_id == None:
             model = get_model_with_id(model_id, self.models)
             label = get_label(model, label_prefix=self.label_prefix)
-            self.log(path_file, f"{label} was not assigned any jump target in Articy, will jump to {self.end_label}")
+            self.log(path_file, f"{label} was not assigned any jump target in Articy, will jump to \"{self.end_label}\"")
             target_label = self.end_label
         else:
             model = get_model_with_id(target_model_id, self.models)
