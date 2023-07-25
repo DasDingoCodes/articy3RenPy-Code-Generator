@@ -535,7 +535,7 @@ class Converter:
             path_reference = self.path_renpy_game_dir / "images" / img_reference
             if path_reference.is_file():
                 continue
-            self.log(path_file, f"{label} references non-existent file {img_reference}")
+            self.log(path_file, f"{label} references non-existent file \"{img_reference}\"")
 
         # Audio files
         # remove angle brackets from strings like "<from 5 to 10>music.mp3"
@@ -551,7 +551,7 @@ class Converter:
             path_reference = self.path_renpy_game_dir / "audio" / audio_reference
             if path_reference.is_file():
                 continue
-            self.log(path_file, f"{label} references non-existent file {audio_reference}")
+            self.log(path_file, f"{label} references non-existent file \"{audio_reference}\"")
 
     def lines_of_expression(self, expression: str, indent_lvl: int = 1) -> list:
         lines = []
