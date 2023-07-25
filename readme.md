@@ -8,6 +8,8 @@ The goals of this Code Generator are:
  - Preventing redundancies. Don't use Articy to just plan out the flow of the game and then manually write RenPy code for it or you might run into consistency issues! If all the game logic is based on the Articy-project, then the code will always be consistent with it. 
  - Generating code that is easy to debug. The Code Generator does not create one big RenPy file with several thousands lines of code. Instead, it creates a hierarchy of directories that represents the story structure as given by the Articy-project. Also, a log file will give warnings in indicate precisely in which node they occured.
 
+{:toc}
+
 ## Showcase
 
 Here are some examples to give a short overview of the Code Generator's functionality. Open the images to see more details.
