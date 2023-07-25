@@ -10,19 +10,37 @@ The goals of this Code Generator are:
 
 ## Showcase
 
-| ![Example menu](images/showcase_00.png) |
-| :---: |
-| Example menu with narration, dialogue and RenPy commands. The coloured highlights show where each part of the generated code comes from. The red box with the RenPy code is the custom **RenPyBox** template as defined in the [setup](#Creating-template-for-raw-RenPy-code). Simple markdown parsing is enabled in this example ("\*Walk away\*" to "{i}Walk away{/i}"). |
+Here are some examples to give a short overview of the Code Generator's functionality. Open the images to see more details.
 
-| ![Example characters](images/showcase_01.png) |
-| :---: |
-| Example of Character objects being created from Articy entities. *Bob Baker* has the unchanged default ``Supporting characters`` template. *Alice Smith* and *Player Character* have the default ``Main Characters`` template extended with the custom **RenPyCharacterParams** feature as defined in the [setup](#-(optional)-Making-it-possible-to-pass-parameters-to-Character-objects). |
+### Menu with narration, dialogue and RenPy code
 
-| ![Example variables](images/showcase_02.png) |
-| :---: |
-| Example of Articy variables being set with their default values. |
+![Example menu](images/showcase_00.png)
 
+Example menu with narration, dialogue and RenPy commands. The coloured highlights show where each part of the generated code comes from. The red box with the RenPy code is the custom **RenPyBox** template as defined in the [setup](#Creating-template-for-raw-RenPy-code). Simple markdown parsing is enabled in this example ("\*Walk away\*" to "{i}Walk away{/i}").
 
+### Articy entities to RenPy characters
+
+![Example characters](images/showcase_01.png)
+
+Example of Character objects being created from Articy entities. *Bob Baker* has the unchanged default ``Supporting characters`` template. *Alice Smith* and *Player Character* have the default ``Main Characters`` template extended with the custom **RenPyCharacterParams** feature as defined in the [setup](#-(optional)-Making-it-possible-to-pass-parameters-to-Character-objects).
+
+### Variables
+
+![Example variables](images/showcase_02.png)
+
+Example of Articy variables being set with their default values.
+
+### Log file
+```
+game\chapter_1\articy_chapter_1.rpy
+    label_0x01000000000007D0 references non-existent file "woof.mp3"
+    label_0x01000000000007D0 contains the following line: # TODO: show the dog
+game\chapter_2\articy_chapter_2.rpy
+    label_0x01000000000007AA was not assigned any jump target in Articy, will jump to "end"
+```
+
+Example log file with three different types of log messages. 
+The messages are grouped by the file they occured in.
 
 ## Requirements
 
