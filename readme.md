@@ -30,25 +30,25 @@ Here are some examples to give a short overview of the Code Generator's function
 
 ### Menu with narration, dialogue and RenPy code
 
-![Example menu](images/showcase_00.png)
+![Example menu](images/showcase_flow.png)
 
 Example menu with narration, dialogue and RenPy commands. The coloured highlights show where each part of the generated code comes from. The red box with the RenPy code is the custom **RenPyBox** template as defined in the [setup](#Creating-template-for-raw-RenPy-code). Simple markdown parsing is enabled in this example ("\*Walk away\*" to "{i}Walk away{/i}").
 
 ### Conditions and instructions
 
-![Example conditions and instructions](images/showcase_04.png)
+![Example conditions and instructions](images/showcase_conditions.png)
 
 Example with conditions and instructions. They can be set up with the ``Condition`` and ``Instruction`` nodes, or with the input and output pins of the nodes.
 
 ### Articy entities to RenPy characters
 
-![Example characters](images/showcase_01.png)
+![Example characters](images/showcase_character.png)
 
 Example of Character objects being created from Articy entities. *Bob Baker* has the unchanged default ``Supporting characters`` template. *Alice Smith* and *Player Character* have the default ``Main Characters`` template extended with the custom **RenPyCharacterParams** feature as defined in the [setup](#-(optional)-Making-it-possible-to-pass-parameters-to-Character-objects).
 
 ### Variables
 
-![Example variables](images/showcase_02.png)
+![Example variables](images/showcase_variables.png)
 
 Example of Articy variables being set with their default values.
 
