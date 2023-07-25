@@ -8,8 +8,21 @@ The goals of this Code Generator are:
  - Preventing redundancies. Don't use Articy to just plan out the flow of the game and then manually write RenPy code for it or you might run into consistency issues! If all the game logic is based on the Articy-project, then the code will always be consistent with it. 
  - Generating code that is easy to debug. The Code Generator does not create one big RenPy file with several thousands lines of code. Instead, it creates a hierarchy of directories that represents the story structure as given by the Articy-project. Also, a log file will give warnings in indicate precisely in which node they occured.
 
-{:toc}
+The Code Generator requires Python 3.9 or higher. As for RenPy, I have tested the Code Generator with RenPy 8.0.0. 
+The generated code is pretty basic, I imagine it works with previous versions as well. 
 
+## Table of Contents
+
+ - [Showcase](#showcase)
+   - [Menu with narration, dialogue and RenPy code](#menu-with-narration-dialogue-and-renpy-code)
+   - [Articy entities to RenPy characters](#articy-entities-to-renpy-characters)
+   - [Variables](#variables)
+   - [Log file](#log-file)
+ - [Quickstart](#quickstart)
+ - [Setup Articy-Project](#setup-articy-project)
+   - [Creating template for raw RenPy code](#creating-template-for-raw-renpy-code)
+   - [(recommended) Create a single uppermost Flow Fragment](#recommended-create-a-single-uppermost-flow-fragment)
+   - [(optional) Making it possible to pass parameters to Character objects](#optional-making-it-possible-to-pass-parameters-to-character-objects)
 ## Showcase
 
 Here are some examples to give a short overview of the Code Generator's functionality. Open the images to see more details.
@@ -43,13 +56,6 @@ game\chapter_2\articy_chapter_2.rpy
 
 Example log file with three different types of log messages. 
 The messages are grouped by the file they occured in.
-
-## Requirements
-
-Python 3.9 or higher. 
-
-As for RenPy, I have tested the Code Generator with RenPy 8.0.0. 
-The generated code is pretty basic, I imagine it works with previous versions as well. 
 
 ## Quickstart
 
