@@ -15,6 +15,7 @@ The generated code is pretty basic, I imagine it works with previous versions as
 
  - [Showcase](#showcase)
    - [Menu with narration, dialogue and RenPy code](#menu-with-narration-dialogue-and-renpy-code)
+   - [Conditions and instructions](#conditions-and-instructions)
    - [Articy entities to RenPy characters](#articy-entities-to-renpy-characters)
    - [Variables](#variables)
    - [Log file](#log-file)
@@ -32,6 +33,12 @@ Here are some examples to give a short overview of the Code Generator's function
 ![Example menu](images/showcase_00.png)
 
 Example menu with narration, dialogue and RenPy commands. The coloured highlights show where each part of the generated code comes from. The red box with the RenPy code is the custom **RenPyBox** template as defined in the [setup](#Creating-template-for-raw-RenPy-code). Simple markdown parsing is enabled in this example ("\*Walk away\*" to "{i}Walk away{/i}").
+
+### Conditions and instructions
+
+![Example conditions and instructions](images/showcase_04.png)
+
+Example with conditions and instructions. They can be set up with the ``Condition`` and ``Instruction`` nodes, or with the input and output pins of the nodes.
 
 ### Articy entities to RenPy characters
 
