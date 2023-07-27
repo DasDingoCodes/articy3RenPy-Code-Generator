@@ -34,6 +34,7 @@ class Converter:
         beginnings_log_lines: str = "# todo, #todo",
         markdown_text_styles: str = "False",
         relative_imgs_in_braces: str = "False",
+        repeat_menu_text: str = "False",
         **kwargs
     ):
         """
@@ -84,6 +85,9 @@ class Converter:
         relative_imgs_in_braces : str (default: "False")
             Whether to parse "{img_name.png}" to "images/path/to/flow_fragment/img_name.png"
             Can be overwritten for a model with the stage directions "relative_img=True" or "relative_img=False"
+        repeat_menu_text : str (default: "False")
+            Whether to repeat the Menu Text of a RenPyBox after the content of the Text field, useful for menus.
+            Can be overwritten for a model with the stage directions "repeat_menu_text=True" or "repeat_menu_text=False"
         """
 
         self.path_articy_json = Path(path_articy_json)
@@ -103,6 +107,7 @@ class Converter:
         self.beginnings_log_lines = string_to_list(beginnings_log_lines)
         self.markdown_text_styles = markdown_text_styles.lower() == "true"
         self.relative_imgs_in_braces = relative_imgs_in_braces.lower() == "true"
+        self.repeat_menu_text = repeat_menu_text.lower() == "true"
 
         self.path_renpy_game_dir = None
         for path_parent_dir in self.path_base_dir.absolute().parents:
@@ -356,8 +361,14 @@ class Converter:
             lines.extend(self.lines_of_renpy_logic(text, model, path_file))
         
         # if MenuText should be repeated after this Fragment was chosen then add it to the lines
-        if model['Properties']['MenuText'] != "" and not has_stage_direction(model, 'repeat_menu_text=False'):
-            lines.extend(self.lines_of_renpy_say(model, INDENT, text_attr="MenuText", separator="\r\n"))
+        if model['Properties']['MenuText'] != "":
+            repeat_menu_text = self.repeat_menu_text
+            if has_stage_direction(model, "repeat_menu_text=True"):
+                repeat_menu_text = True
+            elif has_stage_direction(model, "repeat_menu_text=False"):
+                repeat_menu_text = False
+            if repeat_menu_text:
+                lines.extend(self.lines_of_renpy_say(model, INDENT, text_attr="MenuText", separator="\r\n"))
             
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')
