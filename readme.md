@@ -260,7 +260,7 @@ Multiple comma separated arguments can be given, leading and trailing spaces get
 All stage directions are optional.
 The instructions will be applied to all lines. 
 
- - ``choice_index``: Determines the order in which Dialogue Fragments get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
+ - ``choice_index``: Determines the order in which Dialogue Fragments (including **RenPyBoxes**) get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
  - ``speaker``: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this Dialogue Fragment"``
  - ``markdown``: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic, complex combinations may not work. Example usage: ``markdown=True``
  - ``before``: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
@@ -346,12 +346,12 @@ Multiple comma separated arguments can be given, leading and trailing spaces get
 All stage directions are optional.
 The instructions will be applied to all lines. 
 
- - ``choice_index``: Determines the order in which Dialogue Fragments get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
- - ``speaker``: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this Dialogue Fragment"``
+ - ``choice_index``: Determines the order in which Dialogue Fragments (including **RenPyBoxes**) get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
+ - ``speaker``: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this RenPyBox"``
  - ``markdown``: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic, complex combinations may not work. Example usage: ``markdown=True``
  - ``before``: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
  - ``after``: String of an instruction that shall be inserted after the text. If set, a space will be inserted between the text and ``after``. Example usage: ``after="with vpunch"`` for ``character.alice "I am angry!" with vpunch``
  - ``display_text_box``: Whether or not to display the last line of dialogue/narration when showing menu choices. Will overwrite the default ``menu_display_text_box`` in the config file Example usage: ``display_text_box=True``
- - ``label``: String of the label the Dialogue Fragment should have. The ``label_prefix`` will not be prepended. Example usage: ``label="custom_label"``
+ - ``label``: String of the label the **RenPyBox** should have. The ``label_prefix`` will not be prepended. Example usage: ``label="custom_label"``
  - ``relative_img``: Whether to convert image names in braces to paths to images. Example usage: ``relative_img=True``
  - ``repeat_menu_text``: Whether to repeat Menu Text after executing the contents of the Text field. Example usage: ``repeat_menu_text=False``
