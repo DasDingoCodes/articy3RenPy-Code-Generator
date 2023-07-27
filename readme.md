@@ -164,9 +164,10 @@ Every directory contains the file ``{file_prefix}{directory name}.rpy`` (+ maybe
 The .rpy file contains the RenPy code for that FlowFragment. 
 
 Each node/model in the FlowFragment gets converted into block of RenPy code. 
-The label of that block is ``{label_prefix}{model ID}`` (``label_prefix`` default: "label_"). 
+The default label of a block is ``{label_prefix}{model ID}`` (``label_prefix`` default: "label_"). 
 Should an error occur in a block, you can take the model ID from the label. 
 Then you can find the erroneous node in Articy by searching by query with "Id=={model ID}". 
+You can manually name a block with ``label="custom_label"`` in the stage directions of the Articy node.  
 
 The ``articy_start.rpy`` file (may have different name depending on your config) contains the starting and end point of the generated code. 
 The label of the starting point for the generated code is by default "start", i.e. the start of the RenPy game.
@@ -212,3 +213,54 @@ The following variables can take multiple comma separated values (leading and tr
  - renpy_box: Name of the template that indicates a block with RenPy-code, see [here](#creating-template-for-raw-renpy-code) for how to create them. Default: "RenPyBox"
  - beginnings_log_lines: Beginnings of RenPy code lines that shall be logged. Default: "# todo, #todo"
 
+### Dialogue Fragment
+
+<img align="left" src="images/dialogue_fragment.png">
+
+An Articy Dialogue Fragment contains the following four parts: 
+
+ - Speaker
+ - Text
+ - Menu Text
+ - Stage Directions
+
+#### Speaker
+
+An entity that speaks the lines written in the fragment. 
+If no entity is given, then the line will not be assigned a Character object. 
+However, you can still apply a speaker string via the ``speaker`` stage direction, e.g. ``speaker="John Smith"``. 
+If both an entity and the ``speaker`` stage direction are given, then the ``speaker`` string will be used for the line. 
+
+#### Text
+
+The big field at the bottom is the text that will be spoken/narrated. 
+Can be multiple lines. 
+The markdown text styles commands \*italics\*, \*\*bold\*\* and \_underlined\_ may be parsed. 
+To enable the parsing, set ``markdown_text_styles`` in the config file to "True". 
+Alternatively, markdown parsing may be enabled or disabled for a single Dialoge Fragment via the ``markdown`` stage direction, e.g. ``markdown=True``. 
+
+#### Menu Text
+
+If a node in Articy has multiple outgoing connections, then a RenPy menu will be created with a text for each choice. 
+
+The choice text for a Dialogue Fragment will set as following:
+ 1. Menu Text of the Dialogue Fragment, if it set
+ 2. Label of the connection towards the Dialogue Fragment, if it is set
+ 3. Text of the Dialogue Fragment, if it is set
+
+If there is no choice text, an error will be thrown. 
+Markdown parsing may be enabled like in Text.
+
+#### Stage Directions
+
+With the stage directions the Code Generator can deviate from its default behaviour. 
+Multiple comma separated arguments can be given, leading and trailing spaces get ignored. 
+All stage directions are optional.
+The instructions will be applied to all lines. 
+
+ - choice_index: Determines the order in which Dialogue Fragments get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
+ - speaker: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this Dialogue Fragment"``
+ - markdown: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic. Example usage: ``markdown=True``
+ - before: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
+ - after: String of an instruction that shall be inserted after the text. If set, a space will be inserted between the text and ``after``. Example usage: ``after="with vpunch"`` for ``character.alice "I am angry!" with vpunch``
+ - display_text_box: Whether or not to display the last line of dialogue/narration when showing menu choices. Will overwrite the default ``menu_display_text_box`` in the config file Example usage: ``dispaly_text_box=True``
