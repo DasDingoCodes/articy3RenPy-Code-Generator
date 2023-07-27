@@ -215,7 +215,7 @@ The following variables can take multiple comma separated values (leading and tr
 
 ### Dialogue Fragment
 
-<img align="left" src="images/dialogue_fragment.png">
+<img align="left" src="images/dialogue_fragment.png" width=350>
 
 An Articy Dialogue Fragment contains the following four parts: 
 
