@@ -20,6 +20,15 @@ def get_output_pins_of_model(model: dict) -> list:
         return []
     return model['Properties']['OutputPins']
 
+def get_connections_num(pins: list[dict]) -> int:
+    '''Returns number of connections of pins'''
+    connections_num = 0
+    for pin in pins:
+        if 'Connections' not in pin or len(pin['Connections']) == 0:
+            continue
+        connections_num += len(pin['Connections'])
+    return connections_num
+
 def get_model_with_input_pin(input_pin_id: str, models: list) -> dict:
     '''Returns model with input pin with input_pin_id'''
     for model in models:

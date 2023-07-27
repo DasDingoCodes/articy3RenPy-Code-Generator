@@ -265,7 +265,7 @@ class Converter:
         elif model_type in self.renpy_box_types:
             lines = self.lines_of_renpy_box(model, rel_path_to_file)
         elif model_type in self.node_type_inheritance['Condition']:
-            lines = self.lines_of_condition_node(model)
+            lines = self.lines_of_condition_node(model, rel_path_to_file)
         elif model_type in self.node_type_inheritance['Instruction']:
             lines = self.lines_of_instruction_node(model, rel_path_to_file)
         elif model_type in ignore_model_types:
@@ -389,23 +389,19 @@ class Converter:
         lines.append('\n')
         return lines
 
-    def lines_of_condition_node(self, model: dict) -> list:
+    def lines_of_condition_node(self, model: dict, path_file: Path) -> list:
         lines = self.lines_of_label(model)
         lines.extend(self.comment_lines(model, attr_to_ignore=['DisplayName']))
         condition_text = model['Properties']['Expression'].replace('\r', ' ').replace('\n', ' ')
         condition = convert_condition_from_articy_to_python(condition_text)
         # if
         lines.append(f'{INDENT}if {condition}:\n')
-        target_id_if = model['Properties']['OutputPins'][0]['Connections'][0]['Target']
-        target_model_if = get_model_with_id(target_id_if, self.models)
-        target_label_if = get_label(target_model_if, label_prefix=self.label_prefix)
-        lines.append(f'{INDENT*2}jump {target_label_if}\n')
+        output_pin_if = model['Properties']['OutputPins'][0]
+        lines.extend(self.lines_of_jump_logic_with_pins(model, path_file, [output_pin_if], indent_level=2))
         # else
         lines.append(f'{INDENT}else:\n')
-        target_id_else = model['Properties']['OutputPins'][1]['Connections'][0]['Target']
-        target_model_else = get_model_with_id(target_id_else, self.models)
-        target_label_else = get_label(target_model_else, label_prefix=self.label_prefix)
-        lines.append(f'{INDENT*2}jump {target_label_else}\n')
+        output_pin_else = model['Properties']['OutputPins'][1]
+        lines.extend(self.lines_of_jump_logic_with_pins(model, path_file, [output_pin_else], indent_level=2))
         lines.append('\n')
         return lines
 
@@ -435,28 +431,41 @@ class Converter:
         # In that case, use the output pin of the FlowFragment to jump to the next target
         if model['Type'] in self.node_type_inheritance['FlowFragment'] or model['Type'] in self.node_type_inheritance['Dialogue']:
             input_pins = get_input_pins_of_model(model)
-            if 'Connections' in input_pins[0].keys():
-                pins = input_pins
+            for pin in input_pins:
+                if 'Connections' in pin.keys():
+                    pins = input_pins
 
         model_id = model['Properties']['Id']
         if len(pins) == 0:
             self.log(path_file, f"No pins for model with ID {model_id}")
             return []
-        elif 'Connections' not in pins[0] or len(pins[0]['Connections']) == 0:
+        return self.lines_of_jump_logic_with_pins(model, path_file, pins)
+    
+    def lines_of_jump_logic_with_pins(self, model: dict, path_file: Path, pins: list[dict], indent_level=1) -> list[str]:
+
+        connections_num = get_connections_num(pins)
+        if connections_num == 0:
             label = get_label(model, label_prefix=self.label_prefix)
             self.log(path_file, f"{label} was not assigned any jump target in Articy, will jump to \"{self.end_label}\"")
-            return [f'{INDENT}jump {self.end_label}\n']
-        elif len(pins[0]['Connections']) == 1:
-            return self.lines_of_single_jump(pins[0], model_id, path_file)
+            return [f'{INDENT*indent_level}jump {self.end_label}\n']
+
+        if connections_num == 1:
+            output_pin = None
+            for pin in pins:
+                if 'Connections' not in pin or len(pin['Connections']) == 0:
+                    continue
+                output_pin = pin
+            model_id = model['Properties']['Id']
+            return self.lines_of_single_jump(output_pin, model_id, path_file, indent_level=indent_level)
         else:
             display_text_box = self.menu_display_text_box
             if has_stage_direction(model, "display_text_box=False"):
                 display_text_box = False
             elif has_stage_direction(model, "display_text_box=True"):
                 display_text_box = True
-            return self.lines_of_menu(pins, display_text_box=display_text_box)
+            return self.lines_of_menu(pins, display_text_box=display_text_box, indent_level=indent_level)
 
-    def lines_of_single_jump(self, output_pin: dict, model_id: str, path_file: Path) -> list:
+    def lines_of_single_jump(self, output_pin: dict, model_id: str, path_file: Path, indent_level: int = 1) -> list:
         '''Lines of jump logic for a model with only one target to jump to.'''
         lines = []
         
@@ -471,7 +480,7 @@ class Converter:
         else:
             model = get_model_with_id(target_model_id, self.models)
             target_label = get_label(model, label_prefix=self.label_prefix)
-        lines.append(f'{INDENT}jump {target_label}\n')
+        lines.append(f'{INDENT*indent_level}jump {target_label}\n')
         return lines
 
     def lines_of_renpy_logic(self, text: str, model: dict, path_file: Path, indent_lvl=1) -> list:
@@ -565,40 +574,43 @@ class Converter:
                 lines.append(f'{INDENT*indent_lvl}$ {instruction}\n')
         return lines
 
-    def lines_of_menu(self, pins: list, display_text_box: bool) -> list:
+    def lines_of_menu(self, pins: list, display_text_box: bool, indent_level: int = 1) -> list[str]:
         lines = [
-            f'{INDENT}menu:\n'
+            f'{INDENT*indent_level}menu:\n'
         ]
         if display_text_box:
-            lines.append(f'{INDENT*2}extend ""\n\n') # extra line so that text box is still displayed in menu
-        connections = pins[0]['Connections']
-        # sort connections by the indices of their target models
-        connections = sorted(connections, key=lambda connection: get_connection_index(connection, self.models))
+            lines.append(f'{INDENT*(indent_level+1)}extend ""\n\n') # extra line so that text box is still displayed in menu
+        
+        for pin in pins:
+            connections = pin['Connections']
+            # sort connections by the indices of their target models
+            connections = sorted(connections, key=lambda connection: get_connection_index(connection, self.models))
 
-        for connection in connections:
-            choice_id = connection['Target']
-            choice_model = get_model_with_id(choice_id, self.models)
-            choice_label = get_label(choice_model, label_prefix=self.label_prefix)
-            choice_input_pin_id = connection['TargetPin']
-            choice_text = get_choice_text(choice_model, connection)
-            if choice_text == '':
-                raise InvalidArticy(f'Could not get choice text for connection with target model {choice_id}')
-            markdown_text_styles = self.markdown_text_styles
-            if has_stage_direction(choice_model, "markdown=True"):
-                markdown_text_styles = True
-            elif has_stage_direction(choice_model, "markdown=False"):
-                markdown_text_styles = False
-            choice_text = preprocess_text(choice_text, markdown_text_styles)
-            # Check if there are conditions on the input pin of the choice
-            choice_input_pin = get_input_pin_with_id(choice_input_pin_id, self.models, model=choice_model)
-            # Make the condition a single line so that it can all fit in the same if statement
-            choice_condition_text = choice_input_pin['Text'].replace('\r', ' ').replace('\n', ' ')
-            choice_condition = convert_condition_from_articy_to_python(choice_condition_text)
-            if choice_condition:
-                lines.append(f'{INDENT*2}\"{choice_text}\" if {choice_condition}:\n')
-            else:
-                lines.append(f'{INDENT*2}\"{choice_text}\":\n')
-            lines.append(f'{INDENT*3}jump {choice_label}\n')
+            for connection in connections:
+                choice_id = connection['Target']
+                choice_model = get_model_with_id(choice_id, self.models)
+                choice_label = get_label(choice_model, label_prefix=self.label_prefix)
+                choice_input_pin_id = connection['TargetPin']
+                choice_text = get_choice_text(choice_model, connection)
+                if choice_text == '':
+                    raise InvalidArticy(f'Could not get choice text for connection with target model {choice_id}')
+                markdown_text_styles = self.markdown_text_styles
+                if has_stage_direction(choice_model, "markdown=True"):
+                    markdown_text_styles = True
+                elif has_stage_direction(choice_model, "markdown=False"):
+                    markdown_text_styles = False
+                choice_text = preprocess_text(choice_text, markdown_text_styles)
+                # Check if there are conditions on the input pin of the choice
+                choice_input_pin = get_input_pin_with_id(choice_input_pin_id, self.models, model=choice_model)
+                # Make the condition a single line so that it can all fit in the same if statement
+                choice_condition_text = choice_input_pin['Text'].replace('\r', ' ').replace('\n', ' ')
+                choice_condition = convert_condition_from_articy_to_python(choice_condition_text)
+                if choice_condition:
+                    lines.append(f'{INDENT*(indent_level+1)}\"{choice_text}\" if {choice_condition}:\n')
+                else:
+                    lines.append(f'{INDENT*(indent_level+1)}\"{choice_text}\":\n')
+                lines.extend(self.lines_of_expression(pin['Text'], indent_lvl=indent_level+2))
+                lines.append(f'{INDENT*(indent_level+2)}jump {choice_label}\n')
         return lines
 
     def comment_lines(self, model: dict, attr_to_ignore: list = []) -> list:
