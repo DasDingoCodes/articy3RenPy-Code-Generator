@@ -33,6 +33,7 @@ class Converter:
         menu_display_text_box: str = "True",
         beginnings_log_lines: str = "# todo, #todo",
         markdown_text_styles: str = "False",
+        relative_imgs_in_braces: str = "False",
         **kwargs
     ):
         """
@@ -80,6 +81,9 @@ class Converter:
         markdown_text_styles : str (default: "False")
             Whether to parse simple markdown text styles, i.e. *italics*, **bold** or _underlined_. 
             Can be overwritten for a model with the stage directions "markdown=True" or "markdown=False"
+        relative_imgs_in_braces : str (default: "False")
+            Whether to parse "{img_name.png}" to "images/path/to/flow_fragment/img_name.png"
+            Can be overwritten for a model with the stage directions "relative_img=True" or "relative_img=False"
         """
 
         self.path_articy_json = Path(path_articy_json)
@@ -98,6 +102,7 @@ class Converter:
         self.menu_display_text_box = menu_display_text_box.lower() == "true"
         self.beginnings_log_lines = string_to_list(beginnings_log_lines)
         self.markdown_text_styles = markdown_text_styles.lower() == "true"
+        self.relative_imgs_in_braces = relative_imgs_in_braces.lower() == "true"
 
         self.path_renpy_game_dir = None
         for path_parent_dir in self.path_base_dir.absolute().parents:
@@ -500,25 +505,31 @@ class Converter:
         output: scene image 'images/game/test/test_img.png' with dissolve
         '''
         label = get_label(model, label_prefix=self.label_prefix)
-        while contains_img_call(line):
-            img_name = get_substr_between(line, '{', '}')
-            parent_id = model['Properties']['Parent']
-            path_to_articy_folder = Path(self.hierarchy_path_map[parent_id])
-            path_to_img = path_to_articy_folder
-            # Go up in hierarchy if img_name starts with ../
-            img_name_truncated = img_name
-            while(img_name_truncated.startswith('../')):
-                path_to_img = path_to_img.parent
-                img_name_truncated = img_name_truncated[3:]
-            path_to_img = path_to_img / img_name_truncated
-            # Following line removes 'RenPy/<Project name>/game/articy' from path
-            path_to_img = 'images' / path_to_img.relative_to(self.path_base_dir)
-            path_to_img = str(path_to_img)
-            path_to_img = path_to_img.replace('\\', '/')
-            # Following line removes the directory prefixes
-            path_to_img = path_to_img.replace('/' + self.file_prefix, '/')
-            # Lastly, replace the placeholder with the actual path
-            line = line.replace('{'+img_name+'}', f'\'{path_to_img}\'')
+        relative_imgs_in_braces = self.relative_imgs_in_braces
+        if has_stage_direction(model, "relative_img=False"):
+            relative_imgs_in_braces = False
+        elif has_stage_direction(model, "relative_img=True"):
+            relative_imgs_in_braces = True
+        if relative_imgs_in_braces:
+            while contains_img_call(line):
+                img_name = get_substr_between(line, '{', '}')
+                parent_id = model['Properties']['Parent']
+                path_to_articy_folder = Path(self.hierarchy_path_map[parent_id])
+                path_to_img = path_to_articy_folder
+                # Go up in hierarchy if img_name starts with ../
+                img_name_truncated = img_name
+                while(img_name_truncated.startswith('../')):
+                    path_to_img = path_to_img.parent
+                    img_name_truncated = img_name_truncated[3:]
+                path_to_img = path_to_img / img_name_truncated
+                # Following line removes 'RenPy/<Project name>/game/articy' from path
+                path_to_img = 'images' / path_to_img.relative_to(self.path_base_dir)
+                path_to_img = str(path_to_img)
+                path_to_img = path_to_img.replace('\\', '/')
+                # Following line removes the directory prefixes
+                path_to_img = path_to_img.replace('/' + self.file_prefix, '/')
+                # Lastly, replace the placeholder with the actual path
+                line = line.replace('{'+img_name+'}', f'\'{path_to_img}\'')
 
         # Check if line starts with something that should be logged, e.g. "# TODO"
         if text_starts_with(line, self.beginnings_log_lines):
