@@ -185,39 +185,41 @@ A custom .ini file does not need to define all variables.
 
 #### Paths
 
- - path_articy_dir: The path to the JSON export of the Articy project.
- - path_target_dir: The path that contain nothing but the generated contents. Must be in the hierarchy beneath the ``game`` directory of a RenPy project.
+ - ``path_articy_dir``: The path to the JSON export of the Articy project.
+ - ``path_target_dir``: The path that contain nothing but the generated contents. Must be in the hierarchy beneath the ``game`` directory of a RenPy project.
 
 #### Files
 
- - file_prefix: The prefix given to all generated files. Default: "_articy"
- - base_file_name: Generated code base file. Contains the ``start_label`` and ``end_label`` blocks. Default: "start.py"
- - variables_file_name: File containing variable initialisations. Default: "variables.rpy"
- - characters_file_name: File containing Character definitions made from Articy's entities. Default: "characters.rpy"
- - log_file_name: File containing log messages, i.e. warnings. Default "log.txt"
+ - ``file_prefix``: The prefix given to all generated files. Default: "_articy"
+ - ``base_file_name``: Generated code base file. Contains the ``start_label`` and ``end_label`` blocks. Default: "start.py"
+ - ``variables_file_name``: File containing variable initialisations. Default: "variables.rpy"
+ - ``characters_file_name``: File containing Character definitions made from Articy's entities. Default: "characters.rpy"
+ - ``log_file_name``: File containing log messages, i.e. warnings. Default "log.txt"
 
 #### RenPy
 
- - character_prefix: The prefix given to the generated Character objects. Default: "character.", i.e. using [RenPy's character store](https://www.renpy.org/doc/html/dialogue.html#the-character-store).
- - label_prefix: Prefix for the labels that can be jumped to. Default: "label_"
- - start_label: Label of the RenPy block at the start of the articy generated content. Default "start", i.e. the start of the RenPy game.
- - end_label: Label of the RenPy block that ends the game. All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game. Default: "end"
- - menu_display_text_box: Whether to display the text box by default when showing menu choices (can be overwritten locally). Default: "True"
- - markdown_text_styles: Whether to parse simple markdown text styles by default (can be overwritten locally). Default: "False"
+ - ``character_prefix``: The prefix given to the generated Character objects. Default: "character.", i.e. using [RenPy's character store](https://www.renpy.org/doc/html/dialogue.html#the-character-store).
+ - ``label_prefix``: Prefix for the labels that can be jumped to. Default: "label_"
+ - ``start_label``: Label of the RenPy block at the start of the articy generated content. Default "start", i.e. the start of the RenPy game.
+ - ``end_label``: Label of the RenPy block that ends the game. All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game. Default: "end"
+ - ``menu_display_text_box``: Whether to display the text box by default when showing menu choices (can be overwritten locally). Default: "True"
+ - ``markdown_text_styles``: Whether to parse simple markdown text styles by default (can be overwritten locally). Default: "False"
+ - ``relative_imgs_in_braces``: Whether to parse image names in braces to specific image paths (can be overwritten locally). Default: "False"
+ - ``beginnings_log_lines``: Beginnings of RenPy code lines that shall be logged. Default: "# todo, #todo"
 
 #### Articy
 
 The following variables can take multiple comma separated values (leading and trailing spaces are ignored):
 
- - features_renpy_character_params: Technical names of features that contain parameters for RenPy Character objects, see [here](#optional-making-it-possible-to-pass-parameters-to-character-objects) for how to create and assign them. Default: "RenPyCharacterParams"
- - renpy_box: Name of the template that indicates a block with RenPy-code, see [here](#creating-template-for-raw-renpy-code) for how to create them. Default: "RenPyBox"
- - beginnings_log_lines: Beginnings of RenPy code lines that shall be logged. Default: "# todo, #todo"
+ - ``features_renpy_character_params``: Technical names of features that contain parameters for RenPy Character objects, see [here](#optional-making-it-possible-to-pass-parameters-to-character-objects) for how to create and assign them. Default: "RenPyCharacterParams"
+ - ``renpy_box``: Name of the template that indicates a block with RenPy-code, see [here](#creating-template-for-raw-renpy-code) for how to create them. Default: "RenPyBox"
 
 ### Dialogue Fragment
 
 <img align="right" src="images/dialogue_fragment.png" width=350>
 
-An Articy Dialogue Fragment contains the following four parts: 
+The Dialogue Fragment is used for narration and dialogue. 
+It contains the following four parts: 
 
  - Speaker
  - Text
@@ -229,7 +231,7 @@ An Articy Dialogue Fragment contains the following four parts:
 An entity that speaks the lines written in the fragment. 
 If no entity is given, then the line will not be assigned a Character object. 
 However, you can still apply a speaker string via the ``speaker`` stage direction, e.g. ``speaker="John Smith"``. 
-If both an entity and the ``speaker`` stage direction are given, then the ``speaker`` string will be used for the line. 
+If both an entity and the ``speaker`` stage direction are given, then the ``speaker`` string will be used for the line(s). 
 
 #### Text
 
@@ -258,9 +260,98 @@ Multiple comma separated arguments can be given, leading and trailing spaces get
 All stage directions are optional.
 The instructions will be applied to all lines. 
 
- - choice_index: Determines the order in which Dialogue Fragments get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
- - speaker: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this Dialogue Fragment"``
- - markdown: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic. Example usage: ``markdown=True``
- - before: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
- - after: String of an instruction that shall be inserted after the text. If set, a space will be inserted between the text and ``after``. Example usage: ``after="with vpunch"`` for ``character.alice "I am angry!" with vpunch``
- - display_text_box: Whether or not to display the last line of dialogue/narration when showing menu choices. Will overwrite the default ``menu_display_text_box`` in the config file Example usage: ``dispaly_text_box=True``
+ - ``choice_index``: Determines the order in which Dialogue Fragments get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
+ - ``speaker``: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this Dialogue Fragment"``
+ - ``markdown``: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic, complex combinations may not work. Example usage: ``markdown=True``
+ - ``before``: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
+ - ``after``: String of an instruction that shall be inserted after the text. If set, a space will be inserted between the text and ``after``. Example usage: ``after="with vpunch"`` for ``character.alice "I am angry!" with vpunch``
+ - ``display_text_box``: Whether or not to display the last line of dialogue/narration when showing menu choices. Will overwrite the default ``menu_display_text_box`` in the config file Example usage: ``dispaly_text_box=True``
+ - ``label``: String of the label the Dialogue Fragment should have. The ``label_prefix`` will not be prepended. Example usage: ``label="custom_label"``
+
+### RenPyBox
+
+<img align="right" src="images/renpybox.png" width=350>
+
+The **RenPyBox** (or another name you chose for ``renpy_box`` in the config file) is used to generate RenPy code that is not narration or dialogue. 
+
+As it is based on the Dialogue Fragment it has the same four parts:
+
+ - Speaker
+ - Text
+ - Menu Text
+ - Stage Directions
+
+#### Speaker
+
+Only relevant if Menu Text is used. 
+
+An entity that speaks the lines written in the fragment. 
+If no entity is given, then the line will not be assigned a Character object. 
+However, you can still apply a speaker string via the ``speaker`` stage direction, e.g. ``speaker="John Smith"``. 
+If both an entity and the ``speaker`` stage direction are given, then the ``speaker`` string will be used for the line(s). 
+
+#### Text
+
+The Code Generator will print these lines unmodified, so they can contain any RenPy code. 
+Text can be multiple lines of code. 
+If a line starts with one of ``beginnings_log_lines``, then the line will be logged. 
+By default the Code Generator will log lines if they begin with "# todo" or "#todo". 
+
+The Code Generator will also log lines if they contain a reference to an image or audio file and do not find it in the ``images`` and ``audio`` directories, respectively. 
+Something is considered to be a file reference if it is encapsulated by quotes and ends with an image or audio file ending (".png", ".jpg", ".jpeg", ".webp", ".gif" and ".mp3", ".wav", ".ogg", ".opus", ".flac" respectively). 
+
+The Code Generator has the option to parse image names to paths if they are written in curly braces. 
+Let's say we have got an Articy flow hierarchy ``game>chapter_19>scene_04`` and in that ``scene_04`` Flow Fragment there is a **RenPyBox** with "{img_11.png}" in its Text. 
+Then the Code Generator can parse this to "images/game/chapter_19/scene_04/img_11.png". 
+As this is a rather special case, this behaviour is disabled. 
+You can enable it in the config file with ``relative_imgs_in_braces=True``. 
+Alternatively you can enable or disable it for a single **RenPyBox** with the stage directions ``relative_img=True`` and ``relative_img=False``.
+
+As for my motivation why I created this feature: I had many unique images that I wanted to give meaningful names (image name should describe what is in it). 
+But I also wanted the name to be short, i.e. rather just "pc_cheering.png" instead of "chapter_19_scene_04_img_11_pc_cheering.png". 
+That is why I created the same directory system in the RenPy project's ``game/images`` folder as the flow hierarchy in the Articy project. 
+That is, if I had the flow hierarchy ``game/chapter_19/scene_04`` in Articy, then I also made the directory ``game/images/game/chapter_19/scene_04`` in RenPy (manually). 
+Now I did not want to refer to each image with its full path name, if I could infer the path based on the Flow Fragment it occurs in.
+That is why I added the functionality to parse image names in braces. 
+
+#### Menu Text
+
+If a node in Articy has multiple outgoing connections, then a RenPy menu will be created with a text for each choice. 
+
+The choice text for a **RenPyBox** will set as following:
+ 1. Menu Text of the **RenPyBox**, if it set
+ 2. Label of the connection towards the **RenPyBox**, if it is set
+ 3. Text of the **RenPyBox**, if it is set (note that this would be raw RenPy code!)
+
+If there is no choice text, an error will be thrown. 
+Markdown parsing may be enabled like in Text.
+
+Also, **RenPyBox**'s Menu Text can be repeated after executing the contents of the Text field. 
+The Menu Text would appear as narration/dialogue, i.e. same as the Text field of a Dialogue Fragment. 
+I found this to be very useful for menus: 
+The displayed choices were things the player character could say. 
+After clicking on a choice, the RenPy code in the Text field executes immediately (e.g. showing an image of the player character speaking) and then the Menu Text repeats. 
+This can be enabled in the config file with ``repeat_menu_text=True``. 
+Alternatively you can enable or disable it for a single **RenPyBox** with the stage directions ``repeat_menu_text=True`` and ``repeat_menu_text=False``. 
+
+In the picture below the config's ``repeat_menu_text`` has been set to ``True``. 
+The example also demonstrates the ``choice_index`` setting the order of the choices.
+
+![RenPyBox with repeated menu text](images/renpybox_repeat_menu_text.png)
+
+### Stage Directions
+
+A **RenPyBox** can take the same instructions as a Dialogue Fragment, plus some additional ones (``relative_img``, ``repeat_menu_text``). 
+Multiple comma separated arguments can be given, leading and trailing spaces get ignored. 
+All stage directions are optional.
+The instructions will be applied to all lines. 
+
+ - ``choice_index``: Determines the order in which Dialogue Fragments get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
+ - ``speaker``: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this Dialogue Fragment"``
+ - ``markdown``: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic, complex combinations may not work. Example usage: ``markdown=True``
+ - ``before``: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
+ - ``after``: String of an instruction that shall be inserted after the text. If set, a space will be inserted between the text and ``after``. Example usage: ``after="with vpunch"`` for ``character.alice "I am angry!" with vpunch``
+ - ``display_text_box``: Whether or not to display the last line of dialogue/narration when showing menu choices. Will overwrite the default ``menu_display_text_box`` in the config file Example usage: ``display_text_box=True``
+ - ``label``: String of the label the Dialogue Fragment should have. The ``label_prefix`` will not be prepended. Example usage: ``label="custom_label"``
+ - ``relative_img``: Whether to convert image names in braces to paths to images. Example usage: ``relative_img=True``
+ - ``repeat_menu_text``: Whether to repeat Menu Text after executing the contents of the Text field. Example usage: ``repeat_menu_text=False``
