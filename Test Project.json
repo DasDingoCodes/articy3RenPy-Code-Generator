@@ -14,14 +14,38 @@
   },
   "GlobalVariables": [
     {
-      "Namespace": "alice",
-      "Description": "",
+      "Namespace": "player",
+      "Description": "Variables of the player character",
       "Variables": [
         {
-          "Variable": "display_name",
+          "Variable": "name",
           "Type": "String",
-          "Value": "Alice",
-          "Description": ""
+          "Value": "Player",
+          "Description": "The name of the player character"
+        },
+        {
+          "Variable": "money",
+          "Type": "Integer",
+          "Value": "0",
+          "Description": "The money the player character has"
+        }
+      ]
+    },
+    {
+      "Namespace": "alice",
+      "Description": "Variables of Alice",
+      "Variables": [
+        {
+          "Variable": "sent_message",
+          "Type": "Boolean",
+          "Value": "False",
+          "Description": "Alice sent Bob a message"
+        },
+        {
+          "Variable": "knows_pc",
+          "Type": "Boolean",
+          "Value": "False",
+          "Description": "Alice knows player character"
         }
       ]
     }
@@ -457,16 +481,6 @@
       ]
     },
     {
-      "Type": "RenPyBox",
-      "Class": "FlowFragment",
-      "InheritsFrom": "FlowFragment",
-      "Template": {
-        "TechnicalName": "RenPyBox",
-        "DisplayName": "RenPyBox",
-        "Features": []
-      }
-    },
-    {
       "Type": "Dialogue",
       "Class": "Dialogue",
       "DisplayName": "Dialogue",
@@ -608,6 +622,16 @@
           "ItemType": "OutputPin"
         }
       ]
+    },
+    {
+      "Type": "RenPyBox",
+      "Class": "DialogueFragment",
+      "InheritsFrom": "DialogueFragment",
+      "Template": {
+        "TechnicalName": "RenPyBox",
+        "DisplayName": "RenPyBox",
+        "Features": []
+      }
     },
     {
       "Type": "Hub",
@@ -858,215 +882,6 @@
         "TechnicalName": "DefaultSupportingCharacterTemplate",
         "DisplayName": "Supporting characters",
         "Features": [
-          {
-            "TechnicalName": "DefaultBasicCharacterFeature",
-            "DisplayName": "Basic Character Properties",
-            "Properties": [
-              {
-                "Property": "Age",
-                "Type": "Float",
-                "DisplayName": "Age"
-              },
-              {
-                "Property": "Species",
-                "Type": "string",
-                "DisplayName": "Species"
-              },
-              {
-                "Property": "BornIn",
-                "Type": "string",
-                "DisplayName": "Born in"
-              },
-              {
-                "Property": "Sex",
-                "Type": "Sex",
-                "DisplayName": "Sex"
-              },
-              {
-                "Property": "Occupation",
-                "Type": "string",
-                "DisplayName": "Profession"
-              },
-              {
-                "Property": "Accent",
-                "Type": "string",
-                "DisplayName": "Voice"
-              },
-              {
-                "Property": "Personality",
-                "Type": "string",
-                "DisplayName": "Personality"
-              },
-              {
-                "Property": "Appearance",
-                "Type": "string",
-                "DisplayName": "Appearance"
-              }
-            ],
-            "Constraints": [
-              {
-                "Property": "Age",
-                "Type": "Number",
-                "MinValue": "-3.40282346638529E+38",
-                "MaxValue": "3.40282346638529E+38",
-                "Precision": "0",
-                "MinPrecision": "0",
-                "MaxPrecision": "0",
-                "Unit": null
-              },
-              {
-                "Property": "Species",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "False"
-              },
-              {
-                "Property": "BornIn",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "False"
-              },
-              {
-                "Property": "Sex",
-                "Type": "Enum",
-                "IsLocalized": "True",
-                "SortMode": "BySortIndex"
-              },
-              {
-                "Property": "Occupation",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "False"
-              },
-              {
-                "Property": "Accent",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "False"
-              },
-              {
-                "Property": "Personality",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              },
-              {
-                "Property": "Appearance",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "Type": "DefaultMainCharacterTemplate_02",
-      "Class": "Entity",
-      "InheritsFrom": "Entity",
-      "Template": {
-        "TechnicalName": "DefaultMainCharacterTemplate_02",
-        "DisplayName": "Main characters Copy",
-        "Features": [
-          {
-            "TechnicalName": "DefaultExtendedCharacterFeature",
-            "DisplayName": "Extended Character Properties",
-            "Properties": [
-              {
-                "Property": "Motivation",
-                "Type": "string",
-                "DisplayName": "Goals"
-              },
-              {
-                "Property": "InnerConflict",
-                "Type": "string",
-                "DisplayName": "Inner Conflict"
-              },
-              {
-                "Property": "Skills",
-                "Type": "string",
-                "DisplayName": "Skills"
-              },
-              {
-                "Property": "Fears",
-                "Type": "string",
-                "DisplayName": "Weaknesses"
-              },
-              {
-                "Property": "Habits",
-                "Type": "string",
-                "DisplayName": "Quirks / Habits"
-              },
-              {
-                "Property": "FurtherDetails",
-                "Type": "string",
-                "DisplayName": "Further Details"
-              }
-            ],
-            "Constraints": [
-              {
-                "Property": "Motivation",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              },
-              {
-                "Property": "InnerConflict",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              },
-              {
-                "Property": "Skills",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              },
-              {
-                "Property": "Fears",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              },
-              {
-                "Property": "Habits",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              },
-              {
-                "Property": "FurtherDetails",
-                "Type": "Text",
-                "MaxLength": "2048",
-                "PlaceholderValue": "",
-                "IsLocalized": "True",
-                "AllowsLinebreaks": "True"
-              }
-            ]
-          },
           {
             "TechnicalName": "DefaultBasicCharacterFeature",
             "DisplayName": "Basic Character Properties",
@@ -2447,8 +2262,8 @@
         {
           "Type": "FlowFragment",
           "Properties": {
-            "TechnicalName": "FFr_7443CCE1",
-            "Id": "0x010000000000010F",
+            "TechnicalName": "FFr_C2351242",
+            "Id": "0x0100000000000798",
             "Parent": "0x0300000043CE43F7",
             "Attachments": [],
             "DisplayName": "game",
@@ -2470,31 +2285,31 @@
             "Text": "",
             "ExternalId": "",
             "Position": {
-              "x": 425.0,
-              "y": 425.0
+              "x": 325.0,
+              "y": 450.0
             },
             "ZIndex": 0.0,
             "Size": {
               "w": 275.0,
               "h": 200.0
             },
-            "ShortId": 1950600417,
+            "ShortId": 3258257986,
             "InputPins": [
               {
                 "Text": "",
-                "Id": "0x0100000000000112",
-                "Owner": "0x010000000000010F",
+                "Id": "0x010000000000079B",
+                "Owner": "0x0100000000000798",
                 "Connections": [
                   {
                     "Color": {
                       "a": 1.0,
-                      "r": 0.5764706,
-                      "g": 0.75686276,
-                      "b": 0.8
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
                     },
                     "Label": "",
-                    "TargetPin": "0x0100000000000371",
-                    "Target": "0x010000000000036E"
+                    "TargetPin": "0x01000000000007A7",
+                    "Target": "0x01000000000007A4"
                   }
                 ]
               }
@@ -2502,20 +2317,20 @@
             "OutputPins": [
               {
                 "Text": "",
-                "Id": "0x0100000000000113",
-                "Owner": "0x010000000000010F"
+                "Id": "0x010000000000079C",
+                "Owner": "0x0100000000000798"
               }
             ]
           }
         },
         {
-          "Type": "RenPyBox",
+          "Type": "FlowFragment",
           "Properties": {
-            "TechnicalName": "FFr_B3F41F01",
-            "Id": "0x010000000000036E",
-            "Parent": "0x010000000000010F",
+            "TechnicalName": "FFr_CEFC3E81",
+            "Id": "0x01000000000007A4",
+            "Parent": "0x0100000000000798",
             "Attachments": [],
-            "DisplayName": "Untitled flow fragment",
+            "DisplayName": "chapter_1",
             "PreviewImage": {
               "ViewBox": {
                 "x": 0.0,
@@ -2527,34 +2342,263 @@
               "Asset": "0x0000000000000000"
             },
             "Color": {
-              "r": 0.527115166,
-              "g": 0.08021983,
-              "b": 0.07421357
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
             },
-            "Text": "scene bg background",
+            "Text": "",
             "ExternalId": "",
             "Position": {
-              "x": 325.0,
-              "y": 500.0
+              "x": 650.0,
+              "y": 550.0
             },
-            "ZIndex": 6.0,
+            "ZIndex": 0.0,
             "Size": {
               "w": 275.0,
               "h": 200.0
             },
-            "ShortId": 3019120385,
+            "ShortId": 3472637569,
             "InputPins": [
               {
                 "Text": "",
-                "Id": "0x0100000000000371",
-                "Owner": "0x010000000000036E"
+                "Id": "0x01000000000007A7",
+                "Owner": "0x01000000000007A4",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007B6",
+                    "Target": "0x01000000000007B3"
+                  }
+                ]
               }
             ],
             "OutputPins": [
               {
                 "Text": "",
-                "Id": "0x0100000000000372",
-                "Owner": "0x010000000000036E",
+                "Id": "0x01000000000007A8",
+                "Owner": "0x01000000000007A4",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007AB",
+                    "Target": "0x01000000000007AA"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "FlowFragment",
+          "Properties": {
+            "TechnicalName": "FFr_3AF251D4",
+            "Id": "0x01000000000007EA",
+            "Parent": "0x01000000000007A4",
+            "Attachments": [],
+            "DisplayName": "Pet the dog",
+            "PreviewImage": {
+              "ViewBox": {
+                "x": 0.0,
+                "y": 0.0,
+                "w": 0.0,
+                "h": 0.0
+              },
+              "Mode": "FromAsset",
+              "Asset": "0x0000000000000000"
+            },
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "Contains a scene with the player character walking down the street and petting a dog",
+            "ExternalId": "",
+            "Position": {
+              "x": 1550.0,
+              "y": 650.0
+            },
+            "ZIndex": 8.0,
+            "Size": {
+              "w": 275.0,
+              "h": 200.0
+            },
+            "ShortId": 988959188,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007ED",
+                "Owner": "0x01000000000007EA"
+              },
+              {
+                "Text": "",
+                "Id": "0x01000000000008CF",
+                "Owner": "0x01000000000007EA",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000083F",
+                    "Target": "0x010000000000083C"
+                  }
+                ]
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007EE",
+                "Owner": "0x01000000000007EA",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007A8",
+                    "Target": "0x01000000000007A4"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "FlowFragment",
+          "Properties": {
+            "TechnicalName": "FFr_834D99FD",
+            "Id": "0x01000000000007AA",
+            "Parent": "0x0100000000000798",
+            "Attachments": [],
+            "DisplayName": "chapter_2",
+            "PreviewImage": {
+              "ViewBox": {
+                "x": 0.0,
+                "y": 0.0,
+                "w": 0.0,
+                "h": 0.0
+              },
+              "Mode": "FromAsset",
+              "Asset": "0x0000000000000000"
+            },
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "",
+            "ExternalId": "",
+            "Position": {
+              "x": 1000.0,
+              "y": 550.0
+            },
+            "ZIndex": 0.0,
+            "Size": {
+              "w": 275.0,
+              "h": 200.0
+            },
+            "ShortId": 2202900989,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007AB",
+                "Owner": "0x01000000000007AA",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x0100000000000854",
+                    "Target": "0x0100000000000852"
+                  }
+                ]
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007AC",
+                "Owner": "0x01000000000007AA",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x0100000000000892",
+                    "Target": "0x010000000000088F"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "FlowFragment",
+          "Properties": {
+            "TechnicalName": "FFr_75E4ED62",
+            "Id": "0x010000000000088F",
+            "Parent": "0x0100000000000798",
+            "Attachments": [],
+            "DisplayName": "chapter_3",
+            "PreviewImage": {
+              "ViewBox": {
+                "x": 0.0,
+                "y": 0.0,
+                "w": 0.0,
+                "h": 0.0
+              },
+              "Mode": "FromAsset",
+              "Asset": "0x0000000000000000"
+            },
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "",
+            "ExternalId": "",
+            "Position": {
+              "x": 1375.0,
+              "y": 550.0
+            },
+            "ZIndex": 5.0,
+            "Size": {
+              "w": 275.0,
+              "h": 200.0
+            },
+            "ShortId": 1977937250,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000892",
+                "Owner": "0x010000000000088F",
                 "Connections": [
                   {
                     "Color": {
@@ -2564,8 +2608,1010 @@
                       "b": 0.8
                     },
                     "Label": "",
-                    "TargetPin": "0x010000000000035D",
-                    "Target": "0x010000000000035A"
+                    "TargetPin": "0x01000000000008E4",
+                    "Target": "0x01000000000008E2"
+                  }
+                ]
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000893",
+                "Owner": "0x010000000000088F",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000079C",
+                    "Target": "0x0100000000000798"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Dialogue",
+          "Properties": {
+            "TechnicalName": "Dlg_35CEB868",
+            "Id": "0x01000000000007E2",
+            "Parent": "0x01000000000007A4",
+            "Attachments": [],
+            "DisplayName": "Speaking with Alice",
+            "PreviewImage": {
+              "ViewBox": {
+                "x": 0.0,
+                "y": 0.0,
+                "w": 0.0,
+                "h": 0.0
+              },
+              "Mode": "FromAsset",
+              "Asset": "0x0000000000000000"
+            },
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "Contains a conversation with Alice",
+            "ExternalId": "",
+            "Position": {
+              "x": 1542.0,
+              "y": 375.0
+            },
+            "ZIndex": 6.0,
+            "Size": {
+              "w": 291.0,
+              "h": 200.0
+            },
+            "ShortId": 902740072,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007E5",
+                "Owner": "0x01000000000007E2",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007F8",
+                    "Target": "0x01000000000007F5"
+                  }
+                ]
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007E6",
+                "Owner": "0x01000000000007E2",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007A8",
+                    "Target": "0x01000000000007A4"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_26764E0F",
+            "Id": "0x01000000000007B3",
+            "Parent": "0x01000000000007A4",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "There are already a lot of people on the campus, most of them students you aren't familiar with.\r\n\r\nBut there is one you do recognise! Alice is sitting there and reading some notes.",
+            "ExternalId": "",
+            "Position": {
+              "x": 800.0,
+              "y": 500.0
+            },
+            "ZIndex": 0.0,
+            "Size": {
+              "w": 275.0,
+              "h": 225.0
+            },
+            "ShortId": 645287439,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007B6",
+                "Owner": "0x01000000000007B3"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007B7",
+                "Owner": "0x01000000000007B3",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007CC",
+                    "Target": "0x01000000000007C9"
+                  },
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007D3",
+                    "Target": "0x01000000000007D0"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_E15BC2BF",
+            "Id": "0x01000000000007C9",
+            "Parent": "0x01000000000007A4",
+            "MenuText": "Hey there, Alice!",
+            "StageDirections": "0",
+            "Speaker": "0x01000000000007BD",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "Hey there, Alice! What are you reading?",
+            "ExternalId": "",
+            "Position": {
+              "x": 1175.0,
+              "y": 350.0
+            },
+            "ZIndex": 2.0,
+            "Size": {
+              "w": 275.0,
+              "h": 250.0
+            },
+            "ShortId": 3780887231,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007CC",
+                "Owner": "0x01000000000007C9"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007CD",
+                "Owner": "0x01000000000007C9",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007E5",
+                    "Target": "0x01000000000007E2"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_2E572863",
+            "Id": "0x01000000000007F5",
+            "Parent": "0x01000000000007E2",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0100000000000793",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "Hey... Bob?",
+            "ExternalId": "",
+            "Position": {
+              "x": 750.0,
+              "y": 500.0
+            },
+            "ZIndex": 0.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 777463907,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007F8",
+                "Owner": "0x01000000000007F5"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007F9",
+                "Owner": "0x01000000000007F5",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007FE",
+                    "Target": "0x01000000000007FC"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_9C417B6F",
+            "Id": "0x0100000000000801",
+            "Parent": "0x01000000000007E2",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x01000000000007BD",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "Yes. Bob. The one and only.",
+            "ExternalId": "",
+            "Position": {
+              "x": 1425.0,
+              "y": 500.0
+            },
+            "ZIndex": 4.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 2621537135,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000804",
+                "Owner": "0x0100000000000801"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000805",
+                "Owner": "0x0100000000000801",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000080B",
+                    "Target": "0x0100000000000808"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_AE855680",
+            "Id": "0x0100000000000808",
+            "Parent": "0x01000000000007E2",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0100000000000793",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "I knew it! Damn I am good.",
+            "ExternalId": "",
+            "Position": {
+              "x": 1775.0,
+              "y": 500.0
+            },
+            "ZIndex": 6.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 2927974016,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x010000000000080B",
+                "Owner": "0x0100000000000808"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x010000000000080C",
+                "Owner": "0x0100000000000808",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007E6",
+                    "Target": "0x01000000000007E2"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_E55B3636",
+            "Id": "0x010000000000083C",
+            "Parent": "0x01000000000007EA",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "You pet the dog.",
+            "ExternalId": "",
+            "Position": {
+              "x": 800.0,
+              "y": 500.0
+            },
+            "ZIndex": 0.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 3847960118,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x010000000000083F",
+                "Owner": "0x010000000000083C"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000840",
+                "Owner": "0x010000000000083C",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007EE",
+                    "Target": "0x01000000000007EA"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_AA4352A3",
+            "Id": "0x010000000000085E",
+            "Parent": "0x01000000000007AA",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "You earn money.",
+            "ExternalId": "",
+            "Position": {
+              "x": 1100.0,
+              "y": 325.0
+            },
+            "ZIndex": 2.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 2856538787,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000861",
+                "Owner": "0x010000000000085E"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000862",
+                "Owner": "0x010000000000085E",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x0100000000000867",
+                    "Target": "0x0100000000000865"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_CE4AF2D3",
+            "Id": "0x010000000000086A",
+            "Parent": "0x01000000000007AA",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "How much do you buy?",
+            "ExternalId": "",
+            "Position": {
+              "x": 1400.0,
+              "y": 675.0
+            },
+            "ZIndex": 6.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 3461018323,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x010000000000086D",
+                "Owner": "0x010000000000086A"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x010000000000086E",
+                "Owner": "0x010000000000086A",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x0100000000000874",
+                    "Target": "0x0100000000000871"
+                  },
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x0100000000000889",
+                    "Target": "0x0100000000000886"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_57DD09F4",
+            "Id": "0x0100000000000871",
+            "Parent": "0x01000000000007AA",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "A little bit.",
+            "ExternalId": "",
+            "Position": {
+              "x": 1775.0,
+              "y": 575.0
+            },
+            "ZIndex": 8.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 1474103796,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000874",
+                "Owner": "0x0100000000000871"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "player.money -= 10",
+                "Id": "0x0100000000000875",
+                "Owner": "0x0100000000000871",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007AC",
+                    "Target": "0x01000000000007AA"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_A2D554F5",
+            "Id": "0x0100000000000886",
+            "Parent": "0x01000000000007AA",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "Text": "A lot.",
+            "ExternalId": "",
+            "Position": {
+              "x": 1775.0,
+              "y": 775.0
+            },
+            "ZIndex": 11.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 2731889909,
+            "InputPins": [
+              {
+                "Text": "player.money >= 100",
+                "Id": "0x0100000000000889",
+                "Owner": "0x0100000000000886"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "player.money -= 100",
+                "Id": "0x010000000000088A",
+                "Owner": "0x0100000000000886",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000007AC",
+                    "Target": "0x01000000000007AA"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_0C9D1B6E",
+            "Id": "0x01000000000008FE",
+            "Parent": "0x010000000000088F",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.5764706,
+              "g": 0.75686276,
+              "b": 0.8
+            },
+            "Text": "yes 2",
+            "ExternalId": "",
+            "Position": {
+              "x": 1450.0,
+              "y": 400.0
+            },
+            "ZIndex": 6.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 211622766,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000901",
+                "Owner": "0x01000000000008FE"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000902",
+                "Owner": "0x01000000000008FE",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.5764706,
+                      "g": 0.75686276,
+                      "b": 0.8
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000090F",
+                    "Target": "0x010000000000090C"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_1167868B",
+            "Id": "0x01000000000008F7",
+            "Parent": "0x010000000000088F",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.5764706,
+              "g": 0.75686276,
+              "b": 0.8
+            },
+            "Text": "no 1",
+            "ExternalId": "",
+            "Position": {
+              "x": 1450.0,
+              "y": 600.0
+            },
+            "ZIndex": 4.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 291997323,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000008FA",
+                "Owner": "0x01000000000008F7"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000008FB",
+                "Owner": "0x01000000000008F7",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.5764706,
+                      "g": 0.75686276,
+                      "b": 0.8
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000090F",
+                    "Target": "0x010000000000090C"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_7946C861",
+            "Id": "0x01000000000008E8",
+            "Parent": "0x010000000000088F",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.5764706,
+              "g": 0.75686276,
+              "b": 0.8
+            },
+            "Text": "yes 1",
+            "ExternalId": "",
+            "Position": {
+              "x": 1450.0,
+              "y": 200.0
+            },
+            "ZIndex": 2.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 2034681953,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000008EB",
+                "Owner": "0x01000000000008E8"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000008EC",
+                "Owner": "0x01000000000008E8",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.5764706,
+                      "g": 0.75686276,
+                      "b": 0.8
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000090F",
+                    "Target": "0x010000000000090C"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_8D7BD90C",
+            "Id": "0x0100000000000905",
+            "Parent": "0x010000000000088F",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.5764706,
+              "g": 0.75686276,
+              "b": 0.8
+            },
+            "Text": "no 2",
+            "ExternalId": "",
+            "Position": {
+              "x": 1450.0,
+              "y": 800.0
+            },
+            "ZIndex": 4.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 2373703948,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000906",
+                "Owner": "0x0100000000000905"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000907",
+                "Owner": "0x0100000000000905",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.5764706,
+                      "g": 0.75686276,
+                      "b": 0.8
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000090F",
+                    "Target": "0x010000000000090C"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "DialogueFragment",
+          "Properties": {
+            "TechnicalName": "DFr_A5837A05",
+            "Id": "0x010000000000090C",
+            "Parent": "0x010000000000088F",
+            "MenuText": "",
+            "StageDirections": "",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.5764706,
+              "g": 0.75686276,
+              "b": 0.8
+            },
+            "Text": "player.money = [player.money]",
+            "ExternalId": "",
+            "Position": {
+              "x": 1900.0,
+              "y": 500.0
+            },
+            "ZIndex": 10.0,
+            "Size": {
+              "w": 225.0,
+              "h": 200.0
+            },
+            "ShortId": 2776857093,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x010000000000090F",
+                "Owner": "0x010000000000090C"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000910",
+                "Owner": "0x010000000000090C"
+              }
+            ]
+          }
+        },
+        {
+          "Type": "RenPyBox",
+          "Properties": {
+            "TechnicalName": "DFr_21DE991F",
+            "Id": "0x01000000000007D0",
+            "Parent": "0x01000000000007A4",
+            "MenuText": "*Walk away*",
+            "StageDirections": "1, repeat_menu_text=False",
+            "Speaker": "0x0000000000000000",
+            "SplitHeight": 64.0,
+            "Color": {
+              "r": 0.527115166,
+              "g": 0.08021983,
+              "b": 0.07421357
+            },
+            "Text": "scene street\r\n\r\nplay sound \"woof.mp3\"\r\n\r\n# TODO: show the dog",
+            "ExternalId": "",
+            "Position": {
+              "x": 1175.0,
+              "y": 625.0
+            },
+            "ZIndex": 4.0,
+            "Size": {
+              "w": 275.0,
+              "h": 250.0
+            },
+            "ShortId": 568236319,
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007D3",
+                "Owner": "0x01000000000007D0"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000007D4",
+                "Owner": "0x01000000000007D0",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x01000000000008CF",
+                    "Target": "0x01000000000007EA"
                   }
                 ]
               }
@@ -2574,100 +3620,114 @@
           "Template": {}
         },
         {
-          "Type": "DialogueFragment",
+          "Type": "Condition",
           "Properties": {
-            "TechnicalName": "DFr_CA4B5B14",
-            "Id": "0x0100000000000366",
-            "Parent": "0x010000000000010F",
-            "MenuText": "",
-            "StageDirections": "",
-            "Speaker": "0x010000000000013D",
-            "SplitHeight": 64.0,
-            "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
-            },
-            "Text": "But you can call me Ali!",
+            "TechnicalName": "Cnd_F54CD8D9",
+            "Id": "0x0100000000000852",
+            "Parent": "0x01000000000007AA",
+            "DisplayName": "player.money < 100",
+            "Text": "",
             "ExternalId": "",
             "Position": {
-              "x": 1375.0,
-              "y": 500.0
-            },
-            "ZIndex": 4.0,
-            "Size": {
-              "w": 225.0,
-              "h": 200.0
-            },
-            "ShortId": 3393936148,
-            "InputPins": [
-              {
-                "Text": "",
-                "Id": "0x0100000000000369",
-                "Owner": "0x0100000000000366"
-              }
-            ],
-            "OutputPins": [
-              {
-                "Text": "",
-                "Id": "0x010000000000036A",
-                "Owner": "0x0100000000000366",
-                "Connections": [
-                  {
-                    "Color": {
-                      "a": 1.0,
-                      "r": 0.5764706,
-                      "g": 0.75686276,
-                      "b": 0.8
-                    },
-                    "Label": "",
-                    "TargetPin": "0x010000000000037E",
-                    "Target": "0x010000000000037B"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "Type": "DialogueFragment",
-          "Properties": {
-            "TechnicalName": "DFr_578B47FA",
-            "Id": "0x010000000000035A",
-            "Parent": "0x010000000000010F",
-            "MenuText": "",
-            "StageDirections": "",
-            "Speaker": "0x010000000000013D",
-            "SplitHeight": 64.0,
-            "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
-            },
-            "Text": "My name is Alice.",
-            "ExternalId": "",
-            "Position": {
-              "x": 725.0,
-              "y": 500.0
+              "x": 800.0,
+              "y": 550.0
             },
             "ZIndex": 0.0,
             "Size": {
               "w": 225.0,
-              "h": 200.0
+              "h": 100.0
             },
-            "ShortId": 1468745722,
+            "ShortId": 4115454169,
+            "Expression": "player.money < 100",
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
             "InputPins": [
               {
                 "Text": "",
-                "Id": "0x010000000000035D",
-                "Owner": "0x010000000000035A"
+                "Id": "0x0100000000000854",
+                "Owner": "0x0100000000000852"
               }
             ],
             "OutputPins": [
               {
                 "Text": "",
-                "Id": "0x010000000000035E",
-                "Owner": "0x010000000000035A",
+                "Id": "0x0100000000000855",
+                "Owner": "0x0100000000000852",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x0100000000000861",
+                    "Target": "0x010000000000085E"
+                  }
+                ]
+              },
+              {
+                "Text": "",
+                "Id": "0x0100000000000856",
+                "Owner": "0x0100000000000852",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000086D",
+                    "Target": "0x010000000000086A"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Condition",
+          "Properties": {
+            "TechnicalName": "Cnd_ECD559A8",
+            "Id": "0x01000000000008E2",
+            "Parent": "0x010000000000088F",
+            "DisplayName": "player.money > 50",
+            "Text": "",
+            "ExternalId": "",
+            "Position": {
+              "x": 1050.0,
+              "y": 550.0
+            },
+            "ZIndex": 0.0,
+            "Size": {
+              "w": 225.0,
+              "h": 100.0
+            },
+            "ShortId": 3973405096,
+            "Expression": "player.money > 50",
+            "Color": {
+              "r": 0.5764706,
+              "g": 0.75686276,
+              "b": 0.8
+            },
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x01000000000008E4",
+                "Owner": "0x01000000000008E2"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "player.money = 1904",
+                "Id": "0x01000000000008E5",
+                "Owner": "0x01000000000008E2",
                 "Connections": [
                   {
                     "Color": {
@@ -2677,53 +3737,26 @@
                       "b": 0.8
                     },
                     "Label": "",
-                    "TargetPin": "0x0100000000000363",
-                    "Target": "0x0100000000000361"
+                    "TargetPin": "0x01000000000008EB",
+                    "Target": "0x01000000000008E8"
+                  },
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.5764706,
+                      "g": 0.75686276,
+                      "b": 0.8
+                    },
+                    "Label": "",
+                    "TargetPin": "0x0100000000000901",
+                    "Target": "0x01000000000008FE"
                   }
                 ]
-              }
-            ]
-          }
-        },
-        {
-          "Type": "DialogueFragment",
-          "Properties": {
-            "TechnicalName": "DFr_80F878D8",
-            "Id": "0x010000000000037B",
-            "Parent": "0x010000000000010F",
-            "MenuText": "",
-            "StageDirections": "",
-            "Speaker": "0x0100000000000377",
-            "SplitHeight": 64.0,
-            "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
-            },
-            "Text": "And I am Bob.\r\n\r\nYou can call me Bob.",
-            "ExternalId": "",
-            "Position": {
-              "x": 1725.0,
-              "y": 500.0
-            },
-            "ZIndex": 9.0,
-            "Size": {
-              "w": 225.0,
-              "h": 200.0
-            },
-            "ShortId": 2163767512,
-            "InputPins": [
+              },
               {
-                "Text": "",
-                "Id": "0x010000000000037E",
-                "Owner": "0x010000000000037B"
-              }
-            ],
-            "OutputPins": [
-              {
-                "Text": "",
-                "Id": "0x010000000000037F",
-                "Owner": "0x010000000000037B",
+                "Text": "player.money = 13",
+                "Id": "0x01000000000008E6",
+                "Owner": "0x01000000000008E2",
                 "Connections": [
                   {
                     "Color": {
@@ -2733,54 +3766,9 @@
                       "b": 0.8
                     },
                     "Label": "",
-                    "TargetPin": "0x010000000000038D",
-                    "Target": "0x010000000000038A"
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          "Type": "DialogueFragment",
-          "Properties": {
-            "TechnicalName": "DFr_D7CE355B",
-            "Id": "0x010000000000038A",
-            "Parent": "0x010000000000010F",
-            "MenuText": "",
-            "StageDirections": "",
-            "Speaker": "0x0100000000000386",
-            "SplitHeight": 64.0,
-            "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
-            },
-            "Text": "Hey, what's going on here?",
-            "ExternalId": "",
-            "Position": {
-              "x": 2025.0,
-              "y": 500.0
-            },
-            "ZIndex": 10.0,
-            "Size": {
-              "w": 225.0,
-              "h": 200.0
-            },
-            "ShortId": 3620615515,
-            "InputPins": [
-              {
-                "Text": "",
-                "Id": "0x010000000000038D",
-                "Owner": "0x010000000000038A"
-              }
-            ],
-            "OutputPins": [
-              {
-                "Text": "",
-                "Id": "0x010000000000038E",
-                "Owner": "0x010000000000038A",
-                "Connections": [
+                    "TargetPin": "0x01000000000008FA",
+                    "Target": "0x01000000000008F7"
+                  },
                   {
                     "Color": {
                       "a": 1.0,
@@ -2789,53 +3777,10 @@
                       "b": 0.8
                     },
                     "Label": "",
-                    "TargetPin": "0x010000000000045B",
-                    "Target": "0x0100000000000458"
+                    "TargetPin": "0x0100000000000906",
+                    "Target": "0x0100000000000905"
                   }
                 ]
-              }
-            ]
-          }
-        },
-        {
-          "Type": "DialogueFragment",
-          "Properties": {
-            "TechnicalName": "DFr_08EA7DB6",
-            "Id": "0x0100000000000458",
-            "Parent": "0x010000000000010F",
-            "MenuText": "",
-            "StageDirections": "",
-            "Speaker": "0x0100000000000454",
-            "SplitHeight": 64.0,
-            "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
-            },
-            "Text": "Come on Eve, don't disturb the two.",
-            "ExternalId": "",
-            "Position": {
-              "x": 2350.0,
-              "y": 500.0
-            },
-            "ZIndex": 12.0,
-            "Size": {
-              "w": 225.0,
-              "h": 200.0
-            },
-            "ShortId": 149585334,
-            "InputPins": [
-              {
-                "Text": "",
-                "Id": "0x010000000000045B",
-                "Owner": "0x0100000000000458"
-              }
-            ],
-            "OutputPins": [
-              {
-                "Text": "",
-                "Id": "0x010000000000045C",
-                "Owner": "0x0100000000000458"
               }
             ]
           }
@@ -2843,14 +3788,14 @@
         {
           "Type": "Instruction",
           "Properties": {
-            "TechnicalName": "Ins_C154EC6B",
-            "Id": "0x0100000000000361",
-            "Parent": "0x010000000000010F",
-            "DisplayName": "alice.display_name = \"Ali\"",
+            "TechnicalName": "Ins_91D5427C",
+            "Id": "0x01000000000007FC",
+            "Parent": "0x01000000000007E2",
+            "DisplayName": "player.name = \"Bob\"",
             "Text": "",
             "ExternalId": "",
             "Position": {
-              "x": 1050.0,
+              "x": 1100.0,
               "y": 550.0
             },
             "ZIndex": 2.0,
@@ -2858,36 +3803,90 @@
               "w": 225.0,
               "h": 100.0
             },
-            "ShortId": 3243568235,
-            "Expression": "alice.display_name = \"Ali\"",
+            "ShortId": 2446672508,
+            "Expression": "player.name = \"Bob\"",
             "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
             },
             "InputPins": [
               {
                 "Text": "",
-                "Id": "0x0100000000000363",
-                "Owner": "0x0100000000000361"
+                "Id": "0x01000000000007FE",
+                "Owner": "0x01000000000007FC"
               }
             ],
             "OutputPins": [
               {
                 "Text": "",
-                "Id": "0x0100000000000364",
-                "Owner": "0x0100000000000361",
+                "Id": "0x01000000000007FF",
+                "Owner": "0x01000000000007FC",
                 "Connections": [
                   {
                     "Color": {
                       "a": 1.0,
-                      "r": 0.5764706,
-                      "g": 0.75686276,
-                      "b": 0.8
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
                     },
                     "Label": "",
-                    "TargetPin": "0x0100000000000369",
-                    "Target": "0x0100000000000366"
+                    "TargetPin": "0x0100000000000804",
+                    "Target": "0x0100000000000801"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Instruction",
+          "Properties": {
+            "TechnicalName": "Ins_9C75AD20",
+            "Id": "0x0100000000000865",
+            "Parent": "0x01000000000007AA",
+            "DisplayName": "player.money += 100",
+            "Text": "",
+            "ExternalId": "",
+            "Position": {
+              "x": 1400.0,
+              "y": 375.0
+            },
+            "ZIndex": 4.0,
+            "Size": {
+              "w": 225.0,
+              "h": 100.0
+            },
+            "ShortId": 2624957728,
+            "Expression": "player.money += 100",
+            "Color": {
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
+            },
+            "InputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000867",
+                "Owner": "0x0100000000000865"
+              }
+            ],
+            "OutputPins": [
+              {
+                "Text": "",
+                "Id": "0x0100000000000868",
+                "Owner": "0x0100000000000865",
+                "Connections": [
+                  {
+                    "Color": {
+                      "a": 1.0,
+                      "r": 0.577580452,
+                      "g": 0.7605245,
+                      "b": 0.7991027
+                    },
+                    "Label": "",
+                    "TargetPin": "0x010000000000086D",
+                    "Target": "0x010000000000086A"
                   }
                 ]
               }
@@ -2897,11 +3896,11 @@
         {
           "Type": "DefaultMainCharacterTemplate",
           "Properties": {
-            "TechnicalName": "Ntt_BFB1FC99",
-            "Id": "0x010000000000013D",
+            "TechnicalName": "Ntt_31A4C1D8",
+            "Id": "0x0100000000000793",
             "Parent": "0x03000000AC61A2B3",
             "Attachments": [],
-            "DisplayName": "Alice",
+            "DisplayName": "Alice Smith",
             "Color": {
               "r": 0.577580452,
               "g": 0.7605245,
@@ -2928,12 +3927,12 @@
               "Mode": "FromAsset",
               "Asset": "0x0000000000000000"
             },
-            "ShortId": 3216112793
+            "ShortId": 832881112
           },
           "Template": {
             "RenPyCharacterParams": {
-              "name": "\"alice.display_name\"",
-              "dynamic": "True",
+              "name": "\"Alice\"",
+              "dynamic": "",
               "who_color": ""
             },
             "DefaultExtendedCharacterFeature": {
@@ -2959,15 +3958,15 @@
         {
           "Type": "DefaultMainCharacterTemplate",
           "Properties": {
-            "TechnicalName": "Ntt_E8391277",
-            "Id": "0x0100000000000377",
+            "TechnicalName": "Ntt_569FDE72",
+            "Id": "0x01000000000007BD",
             "Parent": "0x03000000AC61A2B3",
             "Attachments": [],
-            "DisplayName": "Bob",
+            "DisplayName": "Player Character",
             "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
             },
             "Text": "",
             "ExternalId": "",
@@ -2990,12 +3989,12 @@
               "Mode": "FromAsset",
               "Asset": "0x0000000000000000"
             },
-            "ShortId": 3896054391
+            "ShortId": 1453317746
           },
           "Template": {
             "RenPyCharacterParams": {
-              "name": "",
-              "dynamic": "",
+              "name": "\"player.name\"",
+              "dynamic": "True",
               "who_color": ""
             },
             "DefaultExtendedCharacterFeature": {
@@ -3019,17 +4018,17 @@
           }
         },
         {
-          "Type": "Entity",
+          "Type": "DefaultSupportingCharacterTemplate",
           "Properties": {
-            "TechnicalName": "Ntt_3786D296",
-            "Id": "0x0100000000000386",
+            "TechnicalName": "Ntt_2D9D53CE",
+            "Id": "0x0100000000000844",
             "Parent": "0x03000000AC61A2B3",
             "Attachments": [],
-            "DisplayName": "Eve",
+            "DisplayName": "Bob Baker",
             "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
+              "r": 0.577580452,
+              "g": 0.7605245,
+              "b": 0.7991027
             },
             "Text": "",
             "ExternalId": "",
@@ -3052,54 +4051,9 @@
               "Mode": "FromAsset",
               "Asset": "0x0000000000000000"
             },
-            "ShortId": 931582614
-          }
-        },
-        {
-          "Type": "DefaultMainCharacterTemplate_02",
-          "Properties": {
-            "TechnicalName": "Ntt_46D87916",
-            "Id": "0x0100000000000454",
-            "Parent": "0x03000000AC61A2B3",
-            "Attachments": [],
-            "DisplayName": "Walter",
-            "Color": {
-              "r": 0.5764706,
-              "g": 0.75686276,
-              "b": 0.8
-            },
-            "Text": "",
-            "ExternalId": "",
-            "Position": {
-              "x": 60.0,
-              "y": 60.0
-            },
-            "ZIndex": 3.0,
-            "Size": {
-              "w": 256.0,
-              "h": 196.0
-            },
-            "PreviewImage": {
-              "ViewBox": {
-                "x": 0.0,
-                "y": 0.0,
-                "w": 0.0,
-                "h": 0.0
-              },
-              "Mode": "FromAsset",
-              "Asset": "0x0000000000000000"
-            },
-            "ShortId": 1188591894
+            "ShortId": 765285326
           },
           "Template": {
-            "DefaultExtendedCharacterFeature": {
-              "Motivation": "",
-              "InnerConflict": "",
-              "Skills": "",
-              "Fears": "",
-              "Habits": "",
-              "FurtherDetails": ""
-            },
             "DefaultBasicCharacterFeature": {
               "Age": null,
               "Species": "",
@@ -3209,7 +4163,12 @@
         "Type": "GlobalVariables",
         "Children": [
           {
-            "Id": "0x0100000000000200",
+            "Id": "0x0100000000000835",
+            "TechnicalName": "",
+            "Type": "VariableSet"
+          },
+          {
+            "Id": "0x01000000000007BA",
             "TechnicalName": "",
             "Type": "VariableSet"
           }
@@ -3221,44 +4180,144 @@
         "Type": "Flow",
         "Children": [
           {
-            "Id": "0x010000000000010F",
-            "TechnicalName": "FFr_7443CCE1",
+            "Id": "0x0100000000000798",
+            "TechnicalName": "FFr_C2351242",
             "Type": "FlowFragment",
             "Children": [
               {
-                "Id": "0x010000000000036E",
-                "TechnicalName": "FFr_B3F41F01",
-                "Type": "FlowFragment"
+                "Id": "0x01000000000007A4",
+                "TechnicalName": "FFr_CEFC3E81",
+                "Type": "FlowFragment",
+                "Children": [
+                  {
+                    "Id": "0x01000000000007B3",
+                    "TechnicalName": "DFr_26764E0F",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x01000000000007C9",
+                    "TechnicalName": "DFr_E15BC2BF",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x01000000000007D0",
+                    "TechnicalName": "DFr_21DE991F",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x01000000000007E2",
+                    "TechnicalName": "Dlg_35CEB868",
+                    "Type": "Dialogue",
+                    "Children": [
+                      {
+                        "Id": "0x01000000000007F5",
+                        "TechnicalName": "DFr_2E572863",
+                        "Type": "DialogueFragment"
+                      },
+                      {
+                        "Id": "0x01000000000007FC",
+                        "TechnicalName": "Ins_91D5427C",
+                        "Type": "Instruction"
+                      },
+                      {
+                        "Id": "0x0100000000000801",
+                        "TechnicalName": "DFr_9C417B6F",
+                        "Type": "DialogueFragment"
+                      },
+                      {
+                        "Id": "0x0100000000000808",
+                        "TechnicalName": "DFr_AE855680",
+                        "Type": "DialogueFragment"
+                      }
+                    ]
+                  },
+                  {
+                    "Id": "0x01000000000007EA",
+                    "TechnicalName": "FFr_3AF251D4",
+                    "Type": "FlowFragment",
+                    "Children": [
+                      {
+                        "Id": "0x010000000000083C",
+                        "TechnicalName": "DFr_E55B3636",
+                        "Type": "DialogueFragment"
+                      }
+                    ]
+                  }
+                ]
               },
               {
-                "Id": "0x010000000000035A",
-                "TechnicalName": "DFr_578B47FA",
-                "Type": "DialogueFragment"
+                "Id": "0x01000000000007AA",
+                "TechnicalName": "FFr_834D99FD",
+                "Type": "FlowFragment",
+                "Children": [
+                  {
+                    "Id": "0x0100000000000852",
+                    "TechnicalName": "Cnd_F54CD8D9",
+                    "Type": "Condition"
+                  },
+                  {
+                    "Id": "0x010000000000085E",
+                    "TechnicalName": "DFr_AA4352A3",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x0100000000000865",
+                    "TechnicalName": "Ins_9C75AD20",
+                    "Type": "Instruction"
+                  },
+                  {
+                    "Id": "0x010000000000086A",
+                    "TechnicalName": "DFr_CE4AF2D3",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x0100000000000871",
+                    "TechnicalName": "DFr_57DD09F4",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x0100000000000886",
+                    "TechnicalName": "DFr_A2D554F5",
+                    "Type": "DialogueFragment"
+                  }
+                ]
               },
               {
-                "Id": "0x0100000000000361",
-                "TechnicalName": "Ins_C154EC6B",
-                "Type": "Instruction"
-              },
-              {
-                "Id": "0x0100000000000366",
-                "TechnicalName": "DFr_CA4B5B14",
-                "Type": "DialogueFragment"
-              },
-              {
-                "Id": "0x010000000000037B",
-                "TechnicalName": "DFr_80F878D8",
-                "Type": "DialogueFragment"
-              },
-              {
-                "Id": "0x010000000000038A",
-                "TechnicalName": "DFr_D7CE355B",
-                "Type": "DialogueFragment"
-              },
-              {
-                "Id": "0x0100000000000458",
-                "TechnicalName": "DFr_08EA7DB6",
-                "Type": "DialogueFragment"
+                "Id": "0x010000000000088F",
+                "TechnicalName": "FFr_75E4ED62",
+                "Type": "FlowFragment",
+                "Children": [
+                  {
+                    "Id": "0x01000000000008E2",
+                    "TechnicalName": "Cnd_ECD559A8",
+                    "Type": "Condition"
+                  },
+                  {
+                    "Id": "0x01000000000008E8",
+                    "TechnicalName": "DFr_7946C861",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x01000000000008FE",
+                    "TechnicalName": "DFr_0C9D1B6E",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x01000000000008F7",
+                    "TechnicalName": "DFr_1167868B",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x0100000000000905",
+                    "TechnicalName": "DFr_8D7BD90C",
+                    "Type": "DialogueFragment"
+                  },
+                  {
+                    "Id": "0x010000000000090C",
+                    "TechnicalName": "DFr_A5837A05",
+                    "Type": "DialogueFragment"
+                  }
+                ]
               }
             ]
           }
@@ -3270,23 +4329,18 @@
         "Type": "Entities",
         "Children": [
           {
-            "Id": "0x010000000000013D",
-            "TechnicalName": "Ntt_BFB1FC99",
+            "Id": "0x0100000000000793",
+            "TechnicalName": "Ntt_31A4C1D8",
             "Type": "Entity"
           },
           {
-            "Id": "0x0100000000000377",
-            "TechnicalName": "Ntt_E8391277",
+            "Id": "0x0100000000000844",
+            "TechnicalName": "Ntt_2D9D53CE",
             "Type": "Entity"
           },
           {
-            "Id": "0x0100000000000386",
-            "TechnicalName": "Ntt_3786D296",
-            "Type": "Entity"
-          },
-          {
-            "Id": "0x0100000000000454",
-            "TechnicalName": "Ntt_46D87916",
+            "Id": "0x01000000000007BD",
+            "TechnicalName": "Ntt_569FDE72",
             "Type": "Entity"
           }
         ]
@@ -3327,12 +4381,7 @@
                 "Type": "Feature"
               },
               {
-                "Id": "0x0100000000000141",
-                "TechnicalName": "FeatureVariableSet",
-                "Type": "Feature"
-              },
-              {
-                "Id": "0x0100000000000294",
+                "Id": "0x0100000000000712",
                 "TechnicalName": "RenPyCharacterParams",
                 "Type": "Feature"
               }
@@ -3393,7 +4442,14 @@
               {
                 "Id": "0x03000000030B5ACF",
                 "TechnicalName": "",
-                "Type": "TemplateTypeFolder"
+                "Type": "TemplateTypeFolder",
+                "Children": [
+                  {
+                    "Id": "0x010000000000070D",
+                    "TechnicalName": "RenPyBox",
+                    "Type": "Template"
+                  }
+                ]
               },
               {
                 "Id": "0x030000008DD5C0F2",
@@ -3416,11 +4472,6 @@
                     "Type": "Template"
                   },
                   {
-                    "Id": "0x0100000000000391",
-                    "TechnicalName": "DefaultMainCharacterTemplate_02",
-                    "Type": "Template"
-                  },
-                  {
                     "Id": "0x010000000000006B",
                     "TechnicalName": "DefaultSupportingCharacterTemplate",
                     "Type": "Template"
@@ -3430,14 +4481,7 @@
               {
                 "Id": "0x030000006D1BC275",
                 "TechnicalName": "",
-                "Type": "TemplateTypeFolder",
-                "Children": [
-                  {
-                    "Id": "0x010000000000027B",
-                    "TechnicalName": "RenPyBox",
-                    "Type": "Template"
-                  }
-                ]
+                "Type": "TemplateTypeFolder"
               },
               {
                 "Id": "0x0300000013DF3A1A",
