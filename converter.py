@@ -155,7 +155,8 @@ class Converter:
     def run(self):
         self.read_data()
         self.clean_up()
-        self.create_flow_hierarchy_dirs(self.hierarchy_flow[0], self.path_base_dir)
+        for uppermost_flow_fragment in self.hierarchy_flow:
+            self.create_flow_hierarchy_dirs(uppermost_flow_fragment, self.path_base_dir)
         self.write_base_file()
         self.write_characters_file()
         self.write_file_for_variables()
