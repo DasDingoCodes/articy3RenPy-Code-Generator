@@ -177,39 +177,47 @@ All Articy generated blocks that don't have a target to jump to will jump to thi
 
 ### Config file
 
-The Code Generator needs a config file. 
-If ``python convert.py`` is executed, the ``config.ini`` in the same directory as ``convert.py`` gets taken. 
-But you can also give a path to config file as a command line argument: ``python converter.py path/to/config.ini`` 
 
-A custom .ini file does not need to define all variables. 
+
+The Code Generator can be configured with a .ini-file. 
+If ``python converter.py`` is called without arguments, then the ``config.ini`` file will be used by default. 
+Alternatively, a path to a .ini-file may be given as the first argument: ``python converter.py path/to/config.ini``. 
+The key value pairs in the configuration file will be used as the parameters for the Code Generator. 
+The configuration file does not need to specify all parameters, default values will be used if they are not set.
 
 #### Paths
 
+The only necessary parameters are the path parameters:
+
  - ``path_articy_dir``: The path to the JSON export of the Articy project.
- - ``path_target_dir``: The path that contain nothing but the generated contents. Must be in the hierarchy beneath the ``game`` directory of a RenPy project.
+ - ``path_target_dir``: The path that contain nothing but the generated contents. Must be in the hierarchy beneath the ``game`` directory of a RenPy project (e.g. ``game/articy`` or ``game/generated_files/articy``).
 
 #### Files
 
- - ``file_prefix``: The prefix given to all generated files. Default: "_articy"
- - ``base_file_name``: Generated code base file. Contains the ``start_label`` and ``end_label`` blocks. Default: "start.py"
- - ``variables_file_name``: File containing variable initialisations. Default: "variables.rpy"
- - ``characters_file_name``: File containing Character definitions made from Articy's entities. Default: "characters.rpy"
- - ``log_file_name``: File containing log messages, i.e. warnings. Default "log.txt"
+The files parameters set the names of the generated files:
+
+ - ``file_prefix``: The prefix given to all generated files. Default: ``_articy``
+ - ``base_file_name``: Generated code base file. Contains the ``start_label`` and ``end_label`` blocks. Default: ``start.py``
+ - ``variables_file_name``: File containing variable initialisations. Default: ``variables.rpy``
+ - ``characters_file_name``: File containing Character definitions made from Articy's entities. Default: ``characters.rpy``
+ - ``log_file_name``: File containing log messages, i.e. warnings. Default ``log.txt``
 
 #### RenPy
 
+The RenPy parameters control how the generated code will look like:
+
  - ``character_prefix``: The prefix given to the generated Character objects. Default: "character.", i.e. using [RenPy's character store](https://www.renpy.org/doc/html/dialogue.html#the-character-store).
- - ``label_prefix``: Prefix for the labels that can be jumped to. Default: "label_"
- - ``start_label``: Label of the RenPy block at the start of the articy generated content. Default "start", i.e. the start of the RenPy game.
- - ``end_label``: Label of the RenPy block that ends the game. All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game. Default: "end"
- - ``menu_display_text_box``: Whether to display the text box by default when showing menu choices (can be overwritten locally). Default: "True"
- - ``markdown_text_styles``: Whether to parse simple markdown text styles by default (can be overwritten locally). Default: "False"
- - ``relative_imgs_in_braces``: Whether to parse image names in braces to specific image paths (can be overwritten locally). Default: "False"
- - ``beginnings_log_lines``: Beginnings of RenPy code lines that shall be logged. Default: "# todo, #todo"
+ - ``label_prefix``: Prefix for the labels that can be jumped to. Default: ``label_``
+ - ``start_label``: Label of the RenPy block at the start of the articy generated content. If "start", then it is also the start of the RenPy game. Default: ``start``
+ - ``end_label``: Label of the RenPy block that ends the game. All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game. Default: ``end``
+ - ``menu_display_text_box``: Whether to display the text box by default when showing menu choices (can be overwritten locally). Default: ``True``
+ - ``markdown_text_styles``: Whether to parse simple markdown text styles by default (can be overwritten locally). Default: ``False``
+ - ``relative_imgs_in_braces``: Whether to parse image names in braces to specific image paths (can be overwritten locally). Default: ``False``
+ - ``beginnings_log_lines``: Beginnings of RenPy code lines that shall be logged. Default: ``# todo, #todo``
 
 #### Articy
 
-The following variables can take multiple comma separated values (leading and trailing spaces are ignored):
+The Articy parameters define the names of special Articy objects the Code Generator shall pay attention to:
 
  - ``features_renpy_character_params``: Technical names of features that contain parameters for RenPy Character objects, see [here](#optional-making-it-possible-to-pass-parameters-to-character-objects) for how to create and assign them. Default: ``RenPyCharacterParams``
  - ``renpy_box``: Name of the template that indicates a block with RenPy-code, see [here](#creating-template-for-raw-renpy-code) for how to create them. Default: ``RenPyBox``
@@ -355,45 +363,3 @@ The instructions will be applied to all lines.
  - ``label``: String of the label the ``RenPyBox`` should have. The ``label_prefix`` will not be prepended. Example usage: ``label="custom_label"``
  - ``relative_img``: Whether to convert image names in braces to paths to images. Example usage: ``relative_img=True``
  - ``repeat_menu_text``: Whether to repeat Menu Text after executing the contents of the Text field. Example usage: ``repeat_menu_text=False``
-
-### Config file
-
-The Code Generator can be configured via a .ini-file. 
-If ``python converter.py`` is called without arguments, then the ``config.ini`` file will be used by default. 
-Alternatively, a path to a .ini-file may be given as the first argument: ``python converter.py path/to/config.ini``. 
-The key value pairs in the configuration file will be used as the parameters for the Code Generator. 
-The configuration file does not need to specify all parameters, default values will be used if they are not set.
-
-#### Paths
-
-The only necessary parameters are the path parameters:
- - ``path_articy_json``: Path to the Articy JSON export file.
- - ``path_target_dir``: Path to the target directory that shall contain. The directory must be inside the ``game`` folder of the RenPy game (it can also be in some subfolder in the hierarchy beneath ``game``, e.g. ``game/generated_files/articy``). 
-
-#### Files
-
-The files parameters set the names of the generated files:
- - ``file_prefix``: This is the prefix for all files under path_target_dir. Default: ``articy_``
- - ``base_file_name``: Generated code base file. Default: ``start.rpy``
- - ``variables_file_name``: Variables file name. Default: ``variables.rpy``
- - ``characters_file_name``: Characters file name. Default: ``characters.rpy``
- - ``log_file_name``: Log file name. Default: ``log.txt``
-
-#### RenPy
-
-The RenPy parameters control how the generated code will look like:
- - ``character_prefix``: Prefix for the character entities in RenPy. Default: ``character``
- - ``label_prefix``: Prefix for the labels that can be jumped to. Default: ``label_``
- - ``start_label``: Label of the RenPy block at the start of the articy generated content. If "start", then it is also the start of the RenPy game. Default: ``start``
- - ``end_label``: Label of the RenPy block that ends the game. All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game. Default ``end``
- - ``menu_display_text_box``: Whether to display the text box by default when showing menu choices. Can be overwritten for a model with the stage directions "display_text_box=True" or "display_text_box=False". Default: ``True``
- - ``markdown_text_styles``: Whether to parse simple markdown text styles, i.e. \*italics\*, \*\*bold\*\* or \_underlined\_. Can be overwritten for a model with the stage directions "markdown=True" or "markdown=False". Default: ``False``
- - ``relative_imgs_in_braces``: Whether to parse image names in braces to image paths in a ``RenPyBox``. See [RenPyBox-Text](#text-1) for further explanation. Default: ``False``
- - ``beginnings_log_lines``: Beginnings of lines in a ``RenPyBox`` that shall be logged. Before checking if a line start with such a beginning, all texts are converted to lower case. So "# TODO: do the thing" would be logged with "# todo". Default: ``# todo, #todo``
- - ``repeat_menu_text``: Whether to repeat the menu text (narration/dialogue) of a ``RenPyBox`` after the content of the Text field (RenPy code). Can be overwritten for a model with the stage directions "repeat_menu_text=True" or "repeat_menu_text=False". Default: ``False``
-
-#### Articy
-
-The Articy parameters define the names of special Articy objects the Code Generator shall pay attention to:
- - ``features_renpy_character_params``: Technical names of features that contain parameters for RenPy Character objects. Multiple comma separated names can be given. Default: ``RenPyCharacterParams``
- - ``renpy_box``: Names of the templates that indicate a block with RenPy-code. Multiple comma separated names can be given. Default: ``RenPyBox``
