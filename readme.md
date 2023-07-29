@@ -32,7 +32,7 @@ Here are some examples to give a short overview of the Code Generator's function
 
 ![Example menu](images/showcase_flow.png)
 
-Example menu with narration, dialogue and RenPy commands. The coloured highlights show where each part of the generated code comes from. The red box with the RenPy code is the custom **RenPyBox** template as defined in the [setup](#Creating-template-for-raw-RenPy-code).
+Example menu with narration, dialogue and RenPy commands. The coloured highlights show where each part of the generated code comes from. The red box with the RenPy code is the custom ``RenPyBox`` template as defined in the [setup](#Creating-template-for-raw-RenPy-code).
 
 ### Conditions and instructions
 
@@ -44,7 +44,7 @@ Example with conditions and instructions. They can be set up with the ``Conditio
 
 ![Example characters](images/showcase_character.png)
 
-Example of Character objects being created from Articy entities. *Bob Baker* has the unchanged default ``Supporting characters`` template. *Alice Smith* and *Player Character* have the default ``Main Characters`` template extended with the custom **RenPyCharacterParams** feature as defined in the [setup](#-(optional)-Making-it-possible-to-pass-parameters-to-Character-objects).
+Example of Character objects being created from Articy entities. *Bob Baker* has the unchanged default ``Supporting characters`` template. *Alice Smith* and *Player Character* have the default ``Main Characters`` template extended with the custom ``RenPyCharacterParams`` feature as defined in the [setup](#-(optional)-Making-it-possible-to-pass-parameters-to-Character-objects).
 
 ### Variables
 
@@ -86,13 +86,13 @@ During the development of your game your Articy-project keeps changing. To updat
 For all other RenPy statements, we need to tell the Code Generator that an Articy object contains raw RenPy code. That is done by defining a custom template in the Articy-project:
 
 1. Go to Template Design>Templates>Dialogue Fragments
-2. Create a new Template called **RenPyBox** (other names can be specified by changing the ``renpy_box`` parameter in the .ini-file)
-3. Open the template. In the Template parameters tab you should see the ``Display name`` and the ``Technical name``. The value of the ``Technical name`` must be **RenPyBox** (or another name given in the .ini-file). If it is not, edit the template. 
+2. Create a new Template called ``RenPyBox`` (other names can be specified by changing the ``renpy_box`` parameter in the .ini-file)
+3. Open the template. In the Template parameters tab you should see the ``Display name`` and the ``Technical name``. The value of the ``Technical name`` must be ``RenPyBox`` (or another name given in the .ini-file). If it is not, edit the template. 
 4. (optional) Give the template a striking colour. That way you see at first glance which parts of your Articy-project contain raw RenPy code. 
 
 ![RenPyBox Template](images/RenPyBox_template.png)
 
-Now you should be able to add nodes of the type **RenPyBox** to the flow. Go to Flow and click on the drop down menu to the right of the ``Dialogue Fragment`` button. You should see the templates based on ``Dialogue Fragment``, i.e. **RenPyBox**. You can drag and drop it into the flow structure. 
+Now you should be able to add nodes of the type ``RenPyBox`` to the flow. Go to Flow and click on the drop down menu to the right of the ``Dialogue Fragment`` button. You should see the templates based on ``Dialogue Fragment``, i.e. ``RenPyBox``. You can drag and drop it into the flow structure. 
 
 ![RenPyBox Selection](images/RenPyBox_selection.png)
 
@@ -109,9 +109,9 @@ This Code Generator creates [RenPy Character](https://www.renpy.org/doc/html/dia
 Create the custom feature:
 
 1. Go to Template Design>Features
-2. Create a new feature called **RenPyCharacterParams** (other names can be specified by changing the ``features_renpy_character_params`` parameter in the .ini-file)
+2. Create a new feature called ``RenPyCharacterParams`` (other names can be specified by changing the ``features_renpy_character_params`` parameter in the .ini-file)
 3. Open the feature and then press Edit.
-4. In the Feature parameters tab you should see the ``Display name`` and the ``Technical name``. The value of the ``Technical name`` must be **RenPyCharacterParams** (or another name given in the .ini-file). If it is not, edit the ``Technical name``.
+4. In the Feature parameters tab you should see the ``Display name`` and the ``Technical name``. The value of the ``Technical name`` must be ``RenPyCharacterParams`` (or another name given in the .ini-file). If it is not, edit the ``Technical name``.
 5. Add a ``Text (small)`` property to the feature by dragging it into the empty field in the middle. It should have the title ``Text (small)`` and an empty text field below.
 6. Click on the property. In the Property parameters tab you should see the ``Display name`` and  ``Technical name`` of the property. Name both of them like the parameter you want to pass to the RenPy Character class, for example ``name`` or ``who_color``.
 7. Repeat steps 5 and 6 for as many parameters you want. 
@@ -123,12 +123,12 @@ Assign the feature to the entities that shall pass the parameters to RenPy's Cha
 
 1. Go to Template Design>Templates>Entities. 
 2. Open an entity that shall pass parameters to RenPys Character class (e.g. ``Main characters``) and press Edit.
-3. In the Features tab you should see the newly created feature (e.g. **RenPyCharacterParams**). Drag and drop it into the field in the middle. 
+3. In the Features tab you should see the newly created feature (e.g. ``RenPyCharacterParams``). Drag and drop it into the field in the middle. 
 4. Press Apply and confirm the changes. 
 
 ![Adding RenPyCharacterParams to Entity template](images/EntityEditor.png)
 
-An entity of the type edited with the steps above (e.g. ``Main characters``) should now have the new feature. Open such an entity and go the Template tab, under **RenPyCharacterParams** you should see the properties you added to the feature. You can enter the parameters you want to pass by writing them into the text fields.
+An entity of the type edited with the steps above (e.g. ``Main characters``) should now have the new feature. Open such an entity and go the Template tab, under ``RenPyCharacterParams`` you should see the properties you added to the feature. You can enter the parameters you want to pass by writing them into the text fields.
 
 ![Entity with RenPyCharacterParams](images/Entity_with_RenPyCharacterParams.png)
 
@@ -211,8 +211,8 @@ A custom .ini file does not need to define all variables.
 
 The following variables can take multiple comma separated values (leading and trailing spaces are ignored):
 
- - ``features_renpy_character_params``: Technical names of features that contain parameters for RenPy Character objects, see [here](#optional-making-it-possible-to-pass-parameters-to-character-objects) for how to create and assign them. Default: "RenPyCharacterParams"
- - ``renpy_box``: Name of the template that indicates a block with RenPy-code, see [here](#creating-template-for-raw-renpy-code) for how to create them. Default: "RenPyBox"
+ - ``features_renpy_character_params``: Technical names of features that contain parameters for RenPy Character objects, see [here](#optional-making-it-possible-to-pass-parameters-to-character-objects) for how to create and assign them. Default: ``RenPyCharacterParams``
+ - ``renpy_box``: Name of the template that indicates a block with RenPy-code, see [here](#creating-template-for-raw-renpy-code) for how to create them. Default: ``RenPyBox``
 
 ### Dialogue Fragment
 
@@ -260,7 +260,7 @@ Multiple comma separated arguments can be given, leading and trailing spaces get
 All stage directions are optional.
 The instructions will be applied to all lines. 
 
- - ``choice_index``: Determines the order in which Dialogue Fragments (including **RenPyBoxes**) get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
+ - ``choice_index``: Determines the order in which Dialogue Fragments (including those with the template ``RenPyBox``) get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
  - ``speaker``: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this Dialogue Fragment"``
  - ``markdown``: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic, complex combinations may not work. Example usage: ``markdown=True``
  - ``before``: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
@@ -272,7 +272,7 @@ The instructions will be applied to all lines.
 
 <img align="right" src="images/renpybox.png" width=350>
 
-The **RenPyBox** (or another name you chose for ``renpy_box`` in the config file) is used to generate RenPy code that is not narration or dialogue. 
+The ``RenPyBox`` (or another name you chose for ``renpy_box`` in the config file) is used to generate RenPy code that is not narration or dialogue. 
 
 As it is based on the Dialogue Fragment it has the same four parts:
 
@@ -301,11 +301,11 @@ The Code Generator will also log lines if they contain a reference to an image o
 Something is considered to be a file reference if it is encapsulated by quotes and ends with an image or audio file ending (".png", ".jpg", ".jpeg", ".webp", ".gif" and ".mp3", ".wav", ".ogg", ".opus", ".flac" respectively). 
 
 The Code Generator has the option to parse image names to paths if they are written in curly braces. 
-Let's say we have got an Articy flow hierarchy ``game>chapter_19>scene_04`` and in that ``scene_04`` Flow Fragment there is a **RenPyBox** with "{img_11.png}" in its Text. 
+Let's say we have got an Articy flow hierarchy ``game>chapter_19>scene_04`` and in that ``scene_04`` Flow Fragment there is a ``RenPyBox`` with "{img_11.png}" in its Text. 
 Then the Code Generator can parse this to "images/game/chapter_19/scene_04/img_11.png". 
-As this is a rather special case, this behaviour is disabled. 
+As this is a rather special case, this behaviour is disabled by default. 
 You can enable it in the config file with ``relative_imgs_in_braces=True``. 
-Alternatively you can enable or disable it for a single **RenPyBox** with the stage directions ``relative_img=True`` and ``relative_img=False``.
+Alternatively you can enable or disable it for a single ``RenPyBox`` with the stage directions ``relative_img=True`` and ``relative_img=False``.
 
 As for my motivation why I created this feature: I had many unique images that I wanted to give meaningful names (image name should describe what is in it). 
 But I also wanted the name to be short, i.e. rather just "pc_cheering.png" instead of "chapter_19_scene_04_img_11_pc_cheering.png". 
@@ -318,21 +318,21 @@ That is why I added the functionality to parse image names in braces.
 
 If a node in Articy has multiple outgoing connections, then a RenPy menu will be created with a text for each choice. 
 
-The choice text for a **RenPyBox** will set as following:
- 1. Menu Text of the **RenPyBox**, if it set
- 2. Label of the connection towards the **RenPyBox**, if it is set
- 3. Text of the **RenPyBox**, if it is set (note that this would be raw RenPy code!)
+The choice text for a ``RenPyBox`` will set as following:
+ 1. Menu Text of the ``RenPyBox``, if it set
+ 2. Label of the connection towards the ``RenPyBox``, if it is set
+ 3. Text of the ``RenPyBox``, if it is set (note that this would be raw RenPy code!)
 
 If there is no choice text, an error will be thrown. 
 Markdown parsing may be enabled like in Text.
 
-Also, **RenPyBox**'s Menu Text can be repeated after executing the contents of the Text field. 
+Also, ``RenPyBox``'s Menu Text can be repeated after executing the contents of the Text field. 
 The Menu Text would appear as narration/dialogue, i.e. same as the Text field of a Dialogue Fragment. 
 I found this to be very useful for menus: 
 The displayed choices were things the player character could say. 
 After clicking on a choice, the RenPy code in the Text field executes immediately (e.g. showing an image of the player character speaking) and then the Menu Text repeats. 
 This can be enabled in the config file with ``repeat_menu_text=True``. 
-Alternatively you can enable or disable it for a single **RenPyBox** with the stage directions ``repeat_menu_text=True`` and ``repeat_menu_text=False``. 
+Alternatively you can enable or disable it for a single ``RenPyBox`` with the stage directions ``repeat_menu_text=True`` and ``repeat_menu_text=False``. 
 
 In the picture below the config's ``repeat_menu_text`` has been set to ``True``. 
 The example also demonstrates the ``choice_index`` setting the order of the choices.
@@ -341,18 +341,18 @@ The example also demonstrates the ``choice_index`` setting the order of the choi
 
 ### Stage Directions
 
-A **RenPyBox** can take the same instructions as a Dialogue Fragment, plus some additional ones (``relative_img``, ``repeat_menu_text``). 
+A ``RenPyBox`` can take the same instructions as a Dialogue Fragment, plus some additional ones (``relative_img``, ``repeat_menu_text``). 
 Multiple comma separated arguments can be given, leading and trailing spaces get ignored. 
 All stage directions are optional.
 The instructions will be applied to all lines. 
 
- - ``choice_index``: Determines the order in which Dialogue Fragments (including **RenPyBoxes**) get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
+ - ``choice_index``: Determines the order in which Dialogue Fragments (including those with template ``RenPyBox``) get displayed in a RenPy menu. A node with smaller choice_index gets displayed first. The choice_index is given as a sole integer, e.g.: ``2``.
  - ``speaker``: String that will be used as the speaker. Will be used instead of entity if both were given. Example usage: ``speaker="John Smith"`` for ``"John Smith" "No entity was assigned to this RenPyBox"``
  - ``markdown``: Whether or not to do simple markdown text style parsing. Will overwrite the default ``markdown_text_styles`` in the config file. Note that the parsing is very basic, complex combinations may not work. Example usage: ``markdown=True``
  - ``before``: String of an instruction that shall be inserted before the text. If set, a space will be inserted between ``before`` and the text. Example usage: ``before="@ angry"`` for ``character.alice @ angry "I am angry!"`` 
  - ``after``: String of an instruction that shall be inserted after the text. If set, a space will be inserted between the text and ``after``. Example usage: ``after="with vpunch"`` for ``character.alice "I am angry!" with vpunch``
  - ``display_text_box``: Whether or not to display the last line of dialogue/narration when showing menu choices. Will overwrite the default ``menu_display_text_box`` in the config file Example usage: ``display_text_box=True``
- - ``label``: String of the label the **RenPyBox** should have. The ``label_prefix`` will not be prepended. Example usage: ``label="custom_label"``
+ - ``label``: String of the label the ``RenPyBox`` should have. The ``label_prefix`` will not be prepended. Example usage: ``label="custom_label"``
  - ``relative_img``: Whether to convert image names in braces to paths to images. Example usage: ``relative_img=True``
  - ``repeat_menu_text``: Whether to repeat Menu Text after executing the contents of the Text field. Example usage: ``repeat_menu_text=False``
 
@@ -388,9 +388,9 @@ The RenPy parameters control how the generated code will look like:
  - ``end_label``: Label of the RenPy block that ends the game. All Articy generated blocks that don't have a target to jump to will jump to this block, immediately ending the game. Default ``end``
  - ``menu_display_text_box``: Whether to display the text box by default when showing menu choices. Can be overwritten for a model with the stage directions "display_text_box=True" or "display_text_box=False". Default: ``True``
  - ``markdown_text_styles``: Whether to parse simple markdown text styles, i.e. \*italics\*, \*\*bold\*\* or \_underlined\_. Can be overwritten for a model with the stage directions "markdown=True" or "markdown=False". Default: ``False``
- - ``relative_imgs_in_braces``: Whether to parse image names in braces to image paths in a RenPyBox. See [RenPyBox-Text](#text-1) for further explanation. Default: ``False``
- - ``beginnings_log_lines``: Beginnings of lines in a **RenPyBox** that shall be logged. Before checking if a line start with such a beginning, all texts are converted to lower case. So "# TODO: do the thing" would be logged with "# todo". Default: ``# todo, #todo``
- - ``repeat_menu_text``: Whether to repeat the menu text (narration/dialogue) of a RenPyBox after the content of the Text field (RenPy code). Can be overwritten for a model with the stage directions "repeat_menu_text=True" or "repeat_menu_text=False". Default: ``False``
+ - ``relative_imgs_in_braces``: Whether to parse image names in braces to image paths in a ``RenPyBox``. See [RenPyBox-Text](#text-1) for further explanation. Default: ``False``
+ - ``beginnings_log_lines``: Beginnings of lines in a ``RenPyBox`` that shall be logged. Before checking if a line start with such a beginning, all texts are converted to lower case. So "# TODO: do the thing" would be logged with "# todo". Default: ``# todo, #todo``
+ - ``repeat_menu_text``: Whether to repeat the menu text (narration/dialogue) of a ``RenPyBox`` after the content of the Text field (RenPy code). Can be overwritten for a model with the stage directions "repeat_menu_text=True" or "repeat_menu_text=False". Default: ``False``
 
 #### Articy
 
