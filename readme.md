@@ -3,13 +3,14 @@
 The **articy3RenPy Code Generator** is a script that converts the JSON export of a given articy-project to RenPy code. 
 It is designed for those who want to develop their RenPy game with the help of articy:draft 3.
 
-The goals of this Code Generator are:
- - Enabling the use of Articy's awesome story structuring capabilities. Visualising the flow of the game helps immensely if you want to create non-linear stories. Also, you can play through the text-based version of your game in Articy even before testing it in RenPy! 
- - Preventing redundancies. Don't use Articy to just plan out the flow of the game and then manually write RenPy code for it or you might run into consistency issues! If all the game logic is based on the Articy-project, then the code will always be consistent with it. 
- - Generating code that is easy to debug. The Code Generator does not create one big RenPy file with several thousands lines of code. Instead, it creates a hierarchy of directories that represents the story structure as given by the Articy-project. Also, a log file will give warnings in indicate precisely in which node they occured.
+Features of this Code Generator:
+ - Converts all of Articy's Flow structure, entities and variables to RenPy code. You can basically write your whole game in Articy and profit from its easy to use graphical interface. And with just two commands (export Articy to JSON, execute this script) you convert all of it to working RenPy code! See the [Showcase](#showcase) for an overview of its capabilities.
+ - Generated code is easy to debug. The Code Generator does not write all of its code in one massive file, instead it recreates the structure you made in your Articy project. This might be helpful if you ever need to look into the generated files. The Code Generator also creates a [log file](#log-file) with warnings, for example if a referenced image is missing or if it found a todo in the code you wrote. 
+ - Highly customisable. You can edit the [config file](#config-file) to tailor the Code Generator to your needs. You also can use additional instructions to change the behaviour of a single node element, see [here](#stage-directions) and [here](#stage-directions-1).
 
-The Code Generator requires Python 3.9 or higher. As for RenPy, I have tested the Code Generator with RenPy 8.0.0. 
-The generated code is pretty basic, I imagine it works with previous versions as well. 
+The Code Generator requires Python 3.9 or higher. 
+I have tested the Code Generator with Articy V3.2.2 and RenPy 8.0.0. 
+The generated code is pretty basic, I imagine it works with previous RenPy versions as well. 
 
 ## Table of Contents
 
