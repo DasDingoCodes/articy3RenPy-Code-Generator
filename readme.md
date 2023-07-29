@@ -139,6 +139,14 @@ Create the custom feature:
 7. Repeat steps 5 and 6 for as many parameters you want. 
 8. Press Apply and confirm the changes.
 
+The name of the variable that stores the character in RenPy is infered automatically from the DisplayName of the entity. 
+For that, the first name of the DisplayName (i.e. everything until the first space) will be used. 
+So the automatically set variable name for the entity ``Alice Smith`` would be ``character.alice`` (``character.`` being the default character prefix). 
+
+However, you might want to explicitly set the variable name of a character object.  
+You can do that by adding another text property to the feature you created above. 
+The ``Technical name`` of the property should be set to ``RenPyCharacterName`` (another name can be specified by changing the ``renpy_character_name`` parameter in the .ini-file). 
+
 ![RenPyCharacterParams](images/RenPyCharacterParams.png)
 
 Assign the feature to the entities that shall pass the parameters to RenPy's Character class:
@@ -150,7 +158,11 @@ Assign the feature to the entities that shall pass the parameters to RenPy's Cha
 
 ![Adding RenPyCharacterParams to Entity template](images/EntityEditor.png)
 
-An entity of the type edited with the steps above (e.g. ``Main characters``) should now have the new feature. Open such an entity and go the Template tab, under ``RenPyCharacterParams`` you should see the properties you added to the feature. You can enter the parameters you want to pass by writing them into the text fields.
+An entity of the type edited with the steps above (e.g. ``Main characters``) should now have the new feature. 
+Open such an entity and go the Template tab, under ``RenPyCharacterParams`` you should see the properties you added to the feature. 
+You can enter the parameters you want to pass by writing them into the text fields. 
+
+If you added the ``RenPyCharacterName`` property, you can also explicitely name the RenPy character object for that entity by entering a name in the field.
 
 ![Entity with RenPyCharacterParams](images/Entity_with_RenPyCharacterParams.png)
 
@@ -240,6 +252,7 @@ The RenPy parameters control how the generated code will look like:
 The Articy parameters define the names of special Articy objects the Code Generator shall pay attention to:
 
  - ``features_renpy_character_params``: Technical names of features that contain parameters for RenPy Character objects, see [here](#optional-making-it-possible-to-pass-parameters-to-character-objects) for how to create and assign them. Default: ``RenPyCharacterParams``
+ - ``renpy_character_name``: Technical name of property that contains the name RenPy shall use for a character. Will only be used if it is set in a feature of ``features_renpy_character_params``. Default: ``RenPyCharacterName``
  - ``renpy_box``: Name of the template that indicates a block with RenPy-code, see [here](#creating-template-for-raw-renpy-code) for how to create them. Default: ``RenPyBox``
 
 ### Dialogue Fragment
