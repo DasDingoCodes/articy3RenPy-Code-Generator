@@ -29,6 +29,7 @@ class Converter:
         end_label: str = "end",
         character_prefix: str = "character.",
         features_renpy_character_params: str = "RenPyCharacterParams",
+        renpy_character_name: str = "RenPyCharacterName",
         renpy_box: str = "RenPyBox",
         menu_display_text_box: str = "True",
         beginnings_log_lines: str = "# todo, #todo",
@@ -70,6 +71,9 @@ class Converter:
             For example, the feature "RenPyCharacterParams" contains the property "name" and its value is "'Alice'".
             Then the Character object will be generated with "Character([...]name='Alice',[...])". 
             If an entity does not contain a name value or property, then the name parameter will be automatically set to the entity's display name. 
+        renpy_character_name : str (default "RenPyCharacterName")
+            Technical name of property that contains the name RenPy shall use for a character
+            Will only be used if it is set in a feature of features_renpy_character_params
         renpy_box : str (default: "RenPyBox") 
             Name of the template that indicates a block with RenPy-code. 
             RenPy-code as in non-narration or non-dialogue, that is.
@@ -102,6 +106,7 @@ class Converter:
         self.end_label = end_label
         self.character_prefix = character_prefix
         self.features_renpy_character_params = string_to_list(features_renpy_character_params)
+        self.renpy_character_name = renpy_character_name
         self.renpy_box_types = string_to_list(renpy_box)
         self.menu_display_text_box = menu_display_text_box.lower() == "true"
         self.beginnings_log_lines = string_to_list(beginnings_log_lines)
@@ -751,8 +756,30 @@ class Converter:
     def lines_of_character_definition(self, model: dict) -> list:
         '''Returns RenPy code lines for the definition of the given character'''
         lines = []
-        # find out what name RenPy shall use internally for the character
-        character_name = str(model['Properties']['DisplayName']).split(' ')[0].lower().strip()
+        # get the parameters from the character features
+        params = {}
+        character_name = ""
+        if 'Template' in model.keys():
+            for feature_name in model['Template']:
+                if feature_name not in self.features_renpy_character_params:
+                    continue
+                for parameter in model['Template'][feature_name]:
+                    # skip if field was left empty
+                    if model['Template'][feature_name][parameter] == "":
+                        continue
+                    if parameter == self.renpy_character_name:
+                        # if the parameter contains the name RenPy shall use for the Character
+                        # then remember it as the character_name
+                        character_name = model['Template'][feature_name][parameter]
+                    else:
+                        # else store the parameter/value-pair in the parameter dictionary
+                        params[parameter] = model['Template'][feature_name][parameter]
+        # if no name was manually given, use the DisplayName of the model 
+        if "name" not in params:
+            params["name"] = f"\"{model['Properties']['DisplayName']}\""
+        # if character has not been explicitly set, infer it
+        if character_name == "":
+            character_name = str(model['Properties']['DisplayName']).split(' ')[0].lower().strip()
         if character_name == "":
             character_name = "unnamed"
             path_file = self.path_base_dir / self.characters_file_name
@@ -765,18 +792,6 @@ class Converter:
             f"# Entity: {model['Properties']['DisplayName']}\n",
             f'define {character_name} = Character(\n'
         ])
-        params = {}
-        if 'Template' in model.keys():
-            for feature_name in model['Template']:
-                if feature_name not in self.features_renpy_character_params:
-                    continue
-                for parameter in model['Template'][feature_name]:
-                    # if the field is not empty
-                    if model['Template'][feature_name][parameter] != "":
-                        params[parameter] = model['Template'][feature_name][parameter]
-        # if no name was manually given, use the DisplayName of the model 
-        if "name" not in params:
-            params["name"] = f"\"{model['Properties']['DisplayName']}\""
         for parameter in params:
             lines.append(f"{INDENT}{parameter}={params[parameter]},\n")
         lines.append(")\n")
