@@ -24,6 +24,23 @@ The generated code is pretty basic, I imagine it works with previous versions as
    - [Creating template for raw RenPy code](#creating-template-for-raw-renpy-code)
    - [(recommended) Create a single uppermost Flow Fragment](#recommended-create-a-single-uppermost-flow-fragment)
    - [(optional) Making it possible to pass parameters to Character objects](#optional-making-it-possible-to-pass-parameters-to-character-objects)
+ - [Documentation](#documentation)
+   - [Structure](#structure)
+   - [Config file](#config-file)
+     - [Paths](#paths)
+     - [Files](#files)
+     - [RenPy](#renpy)
+     - [Articy](#articy)
+   - [Dialogue Fragment](#dialogue-fragment)
+     - [Speaker](#speaker)
+     - [Text](#text)
+     - [Menu Text](#menu-text)
+     - [Stage Directions](#stage-directions)
+   - [RenPyBox](#renpybox)
+     - [Speaker](#speaker-1)
+     - [Text](#text-1)
+     - [Menu Text](#menu-text-1)
+     - [Stage Directions](#stage-directions-1)
 ## Showcase
 
 Here are some examples to give a short overview of the Code Generator's functionality. Open the images to see more details.
@@ -347,7 +364,7 @@ The example also demonstrates the ``choice_index`` setting the order of the choi
 
 ![RenPyBox with repeated menu text](images/renpybox_repeat_menu_text.png)
 
-### Stage Directions
+#### Stage Directions
 
 A ``RenPyBox`` can take the same instructions as a Dialogue Fragment, plus some additional ones (``relative_img``, ``repeat_menu_text``). 
 Multiple comma separated arguments can be given, leading and trailing spaces get ignored. 
