@@ -300,6 +300,23 @@ class Converter:
         lines.extend(self.lines_of_renpy_say(model, INDENT))
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')
+        invalid_stage_directions = get_invalid_stage_directions(
+            model,
+            choice_index=True,
+            string_arguments = [
+                "speaker",
+                "before",
+                "after",
+                "label"
+            ],
+            bool_arguments = [
+                "markdown",
+                "display_text_box"
+            ]
+        )
+        label = get_label(model, label_prefix=self.label_prefix)
+        for invalid_stage_direction in invalid_stage_directions:
+            self.log(path_file, f"{label} invalid stage direction: {invalid_stage_direction}")
         return lines
     
     def lines_of_renpy_say(self, model: dict, indentation: str, **kwargs) -> list[str]:
@@ -377,6 +394,25 @@ class Converter:
             
         lines.extend(self.lines_of_jump_logic(model, path_file))
         lines.append('\n')
+        invalid_stage_directions = get_invalid_stage_directions(
+            model,
+            choice_index=True,
+            string_arguments = [
+                "speaker",
+                "before",
+                "after",
+                "label"
+            ],
+            bool_arguments = [
+                "markdown",
+                "display_text_box",
+                "relative_img",
+                "repeat_menu_text"
+            ]
+        )
+        label = get_label(model, label_prefix=self.label_prefix)
+        for invalid_stage_direction in invalid_stage_directions:
+            self.log(path_file, f"{label} invalid stage direction: {invalid_stage_direction}")
         return lines
 
     def lines_of_flow_fragment(self, model:dict, path_file: Path) -> list:

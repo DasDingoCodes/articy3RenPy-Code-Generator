@@ -248,6 +248,75 @@ def get_label(model: dict, label_prefix="label_") -> str:
     model_id = model['Properties']['Id']
     return f'{label_prefix}{model_id}'
 
+def get_invalid_stage_directions(
+        model: dict, 
+        choice_index = True,
+        string_arguments = [
+            "speaker",
+            "before",
+            "after",
+            "label"
+        ],
+        bool_arguments = [
+            "markdown",
+            "display_text_box"
+        ]
+    ) -> list[str]:
+    '''Returns list of invalid stage directions a model has'''
+    stage_directions = string_to_list(model['Properties']['StageDirections'])
+    # dict indicating for each stage direction which argument it is, "" if invalid 
+    stage_directions_val_dict = {arg:"" for arg in stage_directions}
+    if choice_index:
+        # look for integers in arguments
+        for argument in stage_directions_val_dict:
+            if argument.isdigit():
+                stage_directions_val_dict[argument] = "choice_index"
+                break
+    
+    # String arguments (e.g. speaker="Alice Smith")
+    for string_argument in string_arguments:
+        stage_directions_val_dict = stage_direction_string_argument(stage_directions_val_dict, string_argument)
+    
+    # Bool arguments (e.g. markdown=True)
+    for bool_argument in bool_arguments:
+        stage_directions_val_dict = stage_direction_bool_argument(stage_directions_val_dict, bool_argument)
+    
+    # list of stage directions that shall be returned
+    invalid_stage_directions = []
+    for stage_direction in stage_directions_val_dict:
+        # if stage direction has not been assigned, append it to list
+        if stage_directions_val_dict[stage_direction] == "":
+            invalid_stage_directions.append(stage_direction)
+    return invalid_stage_directions
+
+def stage_direction_string_argument(stage_directions_val_dict: dict, argument: str) -> dict:
+    '''Checks if stage directions dict contains string argument. If so, marks the particular stage direction and returns dict.
+    Helper function for get_invalid_stage_directions()'''
+    for stage_direction in stage_directions_val_dict:
+        # remove spaces
+        tmp = stage_direction.replace(" ","")
+        tmp_quote = get_substr_between(tmp, f"{argument}='", "'")
+        tmp_double= get_substr_between(tmp, f'{argument}="', '"')
+        if tmp_quote is None and tmp_double is None:
+            continue
+        # if found argument in stage direction, mark stage_direction and return dict
+        stage_directions_val_dict[stage_direction] = argument
+        return stage_directions_val_dict
+    return stage_directions_val_dict
+
+def stage_direction_bool_argument(stage_directions_val_dict: dict, argument: str) -> dict:
+    '''Checks if stage directions dict contains bool argument. If so, marks the particular stage direction and returns dict.
+    Helper function for get_invalid_stage_directions()'''
+    for stage_direction in stage_directions_val_dict:
+        # remove spaces
+        tmp = stage_direction.replace(" ","")
+        if f"{argument}=True" != tmp and f"{argument}=False" != tmp:
+            continue
+        # if found argument in stage direction, mark stage_direction and return dict
+        stage_directions_val_dict[stage_direction] = argument
+        return stage_directions_val_dict
+    return stage_directions_val_dict
+
 def lines_of_model_text(model: dict, markdown_text_styles: bool, separator: str = "\r\n\r\n", text_attr: str = "Text") -> list:
     '''Returns the lines of model text as list of strings.
     markdown_text_styles specifies whether Markdown commands for italic, bold and underlined text shall be parsed.
