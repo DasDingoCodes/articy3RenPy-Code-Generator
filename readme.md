@@ -99,6 +99,10 @@ During the development of your game your Articy-project keeps changing.
 To update your RenPy code, just export your Articy project to JSON and execute the conversion script again. 
 The Code Generator will automatically remove the old files in ``path_target_dir`` and fill it with new code generated from ``path_articy_json``. 
 
+``articy_to_renpy.bat`` is a file for convenience. 
+If you place it and a custom ``config.ini`` file into your game directory, you can execute the script with a double click instead of having to call ``python converter.py path/to/config.ini`` manually. 
+Just make sure to execute the script in an environment with Python 3.9 or higher.
+
 ## Setup Articy-project
 
 ### Creating template for raw RenPy code
