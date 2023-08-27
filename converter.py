@@ -5,10 +5,12 @@ from configparser import ConfigParser
 import shutil
 import os
 import sys
+import logging
 
 
 INDENT = '    '
 
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO, datefmt='%Y-%m-%d %I:%M:%S')
 
 class Converter:
     """
@@ -168,16 +170,25 @@ class Converter:
         self.log_data = {}
     
     def run(self):
+        logging.info("Reading data...")
         self.read_data()
+        logging.info("Cleaning directory...")
         self.clean_up()
+        logging.info("Creating flow hierarchy...")
         for uppermost_flow_fragment in self.hierarchy_flow:
             self.create_flow_hierarchy_dirs(uppermost_flow_fragment, self.path_base_dir)
+        logging.info("Writing base file...")
         self.write_base_file()
+        logging.info("Writing character file...")
         self.write_characters_file()
+        logging.info("Writing variables file...")
         self.write_file_for_variables()
+        logging.info("Writing flow fragment files...")
         for fragment_id in self.hierarchy_path_map:
             self.write_file_for_flow_fragment_id(fragment_id)
+        logging.info("Writing log file...")
         self.write_log_file()
+        logging.info("Done")
     
     def read_data(self):
         '''Read data from given json file and sets up model objects, in- and output-pins, hierarchy flow and global variables'''
