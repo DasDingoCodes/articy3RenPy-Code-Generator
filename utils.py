@@ -353,6 +353,9 @@ def add_renpy_text_style_commands(text: str) -> str:
      - _text_ with {u}text{/u}
     '''
 
+    if text == "":
+        return ""
+    
     # text in [] should not be changed, e.g. [player_character.fake_name] shall remain the same.
     # split whole text into parts. A part is either text in [] (including []) or text outside of [] (excluding [])
     # substitute characters only for text outside []
